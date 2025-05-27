@@ -1,0 +1,56 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+---
+
+<Layout>
+  <section class="max-w-5xl mx-auto px-4 py-16 text-center">
+    <h1 class="text-4xl sm:text-3xl font-bold text-gray-900 mb-12">
+      Elige tu plan
+    </h1>
+
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
+      <!-- Plan mensual -->
+      <div class="p-6 bg-white shadow-lg rounded-lg border">
+        <h2 class="text-xl font-bold text-blue-600 mb-2">Mensual</h2>
+        <p class="text-3xl font-extrabold text-gray-900 mb-4">19,90€</p>
+        <ul class="text-gray-700 space-y-2 mb-6 text-sm text-left">
+          <li>✔ Acceso completo a métodos</li>
+          <li>✔ Actualización diaria de partidos</li>
+          <li>✔ Guardado de favoritos</li>
+        </ul>
+        <a href="/checkout?plan=mensual" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">
+          Contratar
+        </a>
+      </div>
+
+      <!-- Plan trimestral -->
+      <div class="p-6 bg-white shadow-lg rounded-lg border border-blue-600">
+        <h2 class="text-xl font-bold text-blue-600 mb-2">Trimestral</h2>
+        <p class="text-3xl font-extrabold text-gray-900 mb-4">49,90€</p>
+        <ul class="text-gray-700 space-y-2 mb-6 text-sm text-left">
+          <li>✔ Todo lo del plan mensual</li>
+          <li>✔ <del>59,70€</del> (precio normal)</li>
+          <li>✔ Ahorra 9,80€</li>
+        </ul>
+        <a href="/checkout?plan=trimestral" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">
+          Contratar
+        </a>
+      </div>
+
+      <!-- Plan anual -->
+      <div class="p-6 bg-white shadow-lg rounded-lg border">
+        <h2 class="text-xl font-bold text-blue-600 mb-2">Anual</h2>
+        <p class="text-3xl font-extrabold text-gray-900 mb-4">199,00€</p>
+        <ul class="text-gray-700 space-y-2 mb-6 text-sm text-left">
+          <li>✔ Todo lo del plan mensual</li>
+          <li>✔ <del>238,80€</del> (precio normal)</li>
+          <li>✔ Ahorra 39,80€</li>
+        </ul>
+        <a href="/checkout?plan=anual" class="bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">
+          Contratar
+        </a>
+      </div>
+    </div>
+  </section>
+</Layout>

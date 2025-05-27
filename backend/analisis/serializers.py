@@ -34,5 +34,6 @@ class PartidoAnalisisSerializer(serializers.ModelSerializer):
             'cuota_estim_real',
             'cuota_casa_apuestas',
             'valor_estimado',
-            'favorito'
+            'favorito',
+            'porcentaje_acierto',
         ]

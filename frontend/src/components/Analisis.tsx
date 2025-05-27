@@ -22,6 +22,7 @@ type PartidoAnalizado = {
   cuota_estim_real: string;
   cuota_casa_apuestas: string;
   valor_estimado: string;
+  porcentaje_acierto: string;
 };
 
 export default function Analisis() {
@@ -52,19 +53,12 @@ export default function Analisis() {
       });
   }, [metodoSeleccionado]);
 
-  console.log(
-    "➡️ URL final:",
-    `${API_URL}/api/partidos-analisis/${encodeURIComponent(
-      metodoSeleccionado
-    )}/`
-  );
-
   const partidosFiltrados = partidos.filter(
     (p) => p.partido.liga.id === ligaSeleccionada
   );
 
   return (
-    <div className="flex gap-6">
+    <div className="flex flex-col lg:flex-row gap-8">
       <MetodosSidebar
         metodoSeleccionado={metodoSeleccionado}
         onSeleccionar={setMetodoSeleccionado}
@@ -73,57 +67,84 @@ export default function Analisis() {
       <div className="flex-1">
         {metodoSeleccionado ? (
           <>
-            <label className="block mb-2 font-semibold">
-              Selecciona una liga:
-            </label>
-            <select
-              className="border px-3 py-2 rounded mb-6"
-              value={ligaSeleccionada ?? ""}
-              onChange={(e) =>
-                setLigaSeleccionada(
-                  e.target.value ? Number(e.target.value) : null
-                )
-              }
-            >
-              <option value="">-- Elige una liga --</option>
-              {ligas.map((l) => (
-                <option key={l.id} value={l.id}>
-                  {l.nombre}
-                </option>
-              ))}
-            </select>
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Selecciona una liga
+              </label>
+              <select
+                className="w-full border border-gray-300 rounded-lg px-4 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                value={ligaSeleccionada ?? ""}
+                onChange={(e) =>
+                  setLigaSeleccionada(
+                    e.target.value ? Number(e.target.value) : null
+                  )
+                }
+              >
+                <option value="">-- Elige una liga --</option>
+                {ligas.map((l) => (
+                  <option key={l.id} value={l.id}>
+                    {l.nombre}
+                  </option>
+                ))}
+              </select>
+            </div>
 
             {ligaSeleccionada ? (
               partidosFiltrados.length > 0 ? (
-                <table className="w-full border text-sm">
-                  <thead className="bg-gray-100">
-                    <tr>
-                      <th className="text-left px-2 py-1">Fecha</th>
-                      <th className="text-left px-2 py-1">Partido</th>
-                      <th className="text-left px-2 py-1">Cuota estimada</th>
-                      <th className="text-left px-2 py-1">Cuota casa</th>
-                      <th className="text-left px-2 py-1">% Valor</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {partidosFiltrados.map((p) => (
-                      <tr key={p.id} className="border-t">
-                        <td className="px-2 py-1">
-                          {new Date(p.partido.fecha).toLocaleDateString()}
-                        </td>
-                        <td className="px-2 py-1">
-                          {p.partido.equipo_local} vs{" "}
-                          {p.partido.equipo_visitante}
-                        </td>
-                        <td className="px-2 py-1">{p.cuota_estim_real}</td>
-                        <td className="px-2 py-1">{p.cuota_casa_apuestas}</td>
-                        <td className="px-2 py-1">{p.valor_estimado}%</td>
+                <div className="overflow-x-auto">
+                  <table className="min-w-full text-sm border-separate border-spacing-y-2">
+                    <thead className="text-xs uppercase text-gray-500 bg-gray-50 rounded-lg">
+                      <tr>
+                        <th className="text-left px-4 py-2">Fecha</th>
+                        <th className="text-left px-4 py-2">Partido</th>
+                        <th className="text-left px-4 py-2">% Acierto</th>
+                        <th className="text-left px-4 py-2">Cuota real</th>
+                        <th className="text-left px-4 py-2">Cuota casa</th>
+                        <th className="text-left px-4 py-2">% Valor</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {partidosFiltrados.map((p) => (
+                        <tr
+                          key={p.id}
+                          className="bg-white border shadow-sm rounded-lg"
+                        >
+                          <td className="px-4 py-2 text-gray-700">
+                            {new Date(p.partido.fecha).toLocaleDateString()}
+                          </td>
+                          <td className="px-4 py-2 font-medium text-gray-800">
+                            {p.partido.equipo_local} vs{" "}
+                            {p.partido.equipo_visitante}
+                          </td>
+                          <td className="px-4 py-2 text-blue-600 font-semibold">
+                            {parseFloat(p.porcentaje_acierto).toFixed(2)}%
+                          </td>
+                          <td className="px-4 py-2 text-gray-800 font-semibold">
+                            {p.cuota_estim_real}
+                          </td>
+                          <td className="px-4 py-2 text-gray-800 font-semibold">
+                            {p.cuota_casa_apuestas}
+                          </td>
+                          <td
+                            className={`px-4 py-2 font-semibold ${
+                              parseFloat(p.valor_estimado) >= 0
+                                ? "text-green-600"
+                                : "text-red-600"
+                            }`}
+                          >
+                            {parseFloat(p.valor_estimado) >= 0
+                              ? `+${p.valor_estimado}%`
+                              : `${p.valor_estimado}%`}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               ) : (
-                <p className="text-gray-500">No hay partidos para esta liga.</p>
+                <p className="text-gray-500">
+                  No hay partidos disponibles para esta liga.
+                </p>
               )
             ) : (
               <p className="text-gray-500">
