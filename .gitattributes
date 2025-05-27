@@ -1,0 +1,10 @@
+# Forza LF como fin de línea en todo lo importante del frontend
+*.astro text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+
+# Activa autodetección de texto y fuerza UTF-8
+* text=auto
