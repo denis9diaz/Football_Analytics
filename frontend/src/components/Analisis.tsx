@@ -181,12 +181,15 @@ export default function Analisis() {
                             {partidosLiga.map((p, idx) => (
                               <tr key={p.id} className="hover:bg-gray-50">
                                 <td className="px-4 py-2 text-gray-700">
-                                  {new Date(p.partido.fecha).toLocaleTimeString(
-                                    [],
-                                    {
-                                      hour: "2-digit",
-                                      minute: "2-digit",
-                                    }
+                                  {format(
+                                    new Date(
+                                      new Date(p.partido.fecha).toLocaleString(
+                                        "en-US",
+                                        { timeZone: "Europe/Madrid" }
+                                      )
+                                    ),
+                                    "HH:mm",
+                                    { locale: es }
                                   )}
                                 </td>
                                 <td className="px-4 py-2 font-medium text-gray-800">
@@ -194,7 +197,11 @@ export default function Analisis() {
                                   {p.partido.equipo_visitante}
                                 </td>
                                 <td className="px-4 py-2 text-blue-600 font-semibold">
-                                  {parseFloat(p.porcentaje_acierto).toFixed(2)}%
+                                  {p.porcentaje_acierto
+                                    ? `${parseFloat(p.porcentaje_acierto).toFixed(
+                                        2
+                                      )}%`
+                                    : "-"}
                                 </td>
                                 <td className="px-4 py-2 text-gray-800 font-semibold">
                                   {p.cuota_estim_real}
@@ -203,15 +210,21 @@ export default function Analisis() {
                                   {p.cuota_casa_apuestas}
                                 </td>
                                 <td
-                                  className={`px-4 py-2 font-semibold ${
-                                    parseFloat(p.valor_estimado) >= 0
-                                      ? "text-green-600"
-                                      : "text-red-600"
-                                  }`}
+                                  className="px-4 py-2 font-semibold"
+                                  style={{
+                                    color:
+                                      parseFloat(p.valor_estimado) > 0
+                                        ? "#16a34a"
+                                        : parseFloat(p.valor_estimado) < 0
+                                        ? "#dc2626"
+                                        : undefined,
+                                  }}
                                 >
-                                  {parseFloat(p.valor_estimado) >= 0
-                                    ? `+${p.valor_estimado}%`
-                                    : `${p.valor_estimado}%`}
+                                  {p.valor_estimado
+                                    ? `${parseFloat(p.valor_estimado).toFixed(
+                                        2
+                                      )}%`
+                                    : "-"}
                                 </td>
                               </tr>
                             ))}
