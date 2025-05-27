@@ -1,3 +1,7 @@
+---
+import Navbar from "../components/Navbar.astro";
+---
+
 <!doctype html>
 <html lang="es">
 	<head>
@@ -15,9 +19,10 @@
 		<meta property="og:image" content="/favicon.svg" />
 		<meta property="og:locale" content="es_ES" />
 		<link rel="canonical" href="" />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 	</head>
 	<body>
+		<Navbar />
 		<slot />
 	</body>
 </html>
