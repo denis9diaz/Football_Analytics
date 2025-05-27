@@ -1,0 +1,14 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import '../styles/global.css';
+import AnalisisComponent from '../components/Analisis.tsx';
+---
+
+<Layout>
+  <Navbar />
+  <main class="max-w-6xl mx-auto px-4 py-10">
+    <h1 class="text-2xl font-bold mb-6">Análisis por liga</h1>
+    <AnalisisComponent client:load />
+  </main>
+</Layout>
