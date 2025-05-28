@@ -73,16 +73,24 @@ export default function Analisis() {
 
   const ordenarPartidos = (
     partidos: PartidoAnalizado[],
-    campo: keyof PartidoAnalizado
+    campo: keyof PartidoAnalizado | "fecha"
   ) => {
     const sorted = [...partidos].sort((a, b) => {
-      const aVal = parseFloat(a[campo] as string);
-      const bVal = parseFloat(b[campo] as string);
+      let aVal: number;
+      let bVal: number;
+
+      if (campo === "fecha") {
+        aVal = new Date(a.partido.fecha).getTime();
+        bVal = new Date(b.partido.fecha).getTime();
+      } else {
+        aVal = parseFloat(a[campo] as string);
+        bVal = parseFloat(b[campo] as string);
+      }
 
       if (isNaN(aVal) || isNaN(bVal)) return 0;
-
       return ordenAscendente ? aVal - bVal : bVal - aVal;
     });
+
     return sorted;
   };
 
@@ -92,6 +100,16 @@ export default function Analisis() {
     } else {
       setOrdenCampo(campo);
       setOrdenAscendente(false);
+    }
+  };
+
+  const handleOrdenFecha = () => {
+    const campo = "fecha";
+    if (ordenCampo === campo) {
+      setOrdenAscendente(!ordenAscendente);
+    } else {
+      setOrdenCampo(campo);
+      setOrdenAscendente(true);
     }
   };
 
@@ -109,7 +127,7 @@ export default function Analisis() {
               <div className="text-sm font-medium text-gray-700">
                 Filtrar por liga
                 <select
-                  className="ml-2 border border-gray-300 rounded-lg px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="ml-2 border border-gray-300 rounded-lg px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
                   value={ligaFiltrada ?? ""}
                   onChange={(e) =>
                     setLigaFiltrada(
@@ -125,21 +143,21 @@ export default function Analisis() {
                   ))}
                 </select>
               </div>
-              <div className="relative flex items-center gap-2">
+              <div className="relative flex items-center gap-1 sm:gap-2">
                 <button
                   onClick={() =>
                     setFechaSeleccionada(subDays(fechaSeleccionada, 1))
                   }
-                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200"
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-200 cursor-pointer text-sm"
                 >
                   ←
                 </button>
                 <button
                   onClick={() => setCalendarioAbierto(!calendarioAbierto)}
-                  className="border rounded-full px-4 py-1 flex items-center gap-2 hover:bg-gray-100"
+                  className="border rounded-full px-2 py-1 min-w-[120px] justify-center flex items-center gap-1 sm:gap-2 hover:bg-gray-100 cursor-pointer text-sm"
                 >
-                  <i className="fas fa-calendar-alt" />
-                  <span className="font-medium">
+                  <i className="fas fa-calendar-alt text-sm" />
+                  <span className="font-medium truncate">
                     {format(fechaSeleccionada, "dd/MM EEE", {
                       locale: es,
                     }).toUpperCase()}
@@ -149,7 +167,7 @@ export default function Analisis() {
                   onClick={() =>
                     setFechaSeleccionada(addDays(fechaSeleccionada, 1))
                   }
-                  className="w-8 h-8 rounded-full flex items-center justify-center hover:bg-gray-200"
+                  className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-200 cursor-pointer text-sm"
                 >
                   →
                 </button>
@@ -171,7 +189,6 @@ export default function Analisis() {
                 )}
               </div>
             </div>
-
             {ligas
               .filter(
                 (liga) => ligaFiltrada === null || liga.id === ligaFiltrada
@@ -193,22 +210,42 @@ export default function Analisis() {
 
                     {partidosLiga.length > 0 ? (
                       <div className="overflow-x-auto border border-gray-200 rounded-b">
-                        <table className="w-full max-w-6xl text-sm text-left table-fixed">
-                          <thead className="text-xs text-gray-500 bg-gray-50">
+                        <table className="min-w-[650px] w-full text-sm text-left table-fixed">
+                          <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                             <tr>
-                              <th className="px-4 py-2 w-[90px]">Hora</th>
+                              <th
+                                className="px-4 py-2 w-[90px] cursor-pointer select-none"
+                                onClick={handleOrdenFecha}
+                              >
+                                <div className="flex items-center gap-1">
+                                  Hora
+                                  <span
+                                    className={
+                                      ordenCampo === "fecha"
+                                        ? "text-blue-600"
+                                        : "text-gray-400"
+                                    }
+                                  >
+                                    {ordenCampo === "fecha"
+                                      ? ordenAscendente
+                                        ? "▲"
+                                        : "▼"
+                                      : "↕"}
+                                  </span>
+                                </div>
+                              </th>
                               <th className="px-4 py-2 min-w-[200px]">
                                 Partido
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[120px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[115px] cursor-pointer select-none"
                                 onClick={() =>
                                   handleOrden("porcentaje_acierto")
                                 }
                               >
                                 <div className="flex items-center gap-1">
-                                  % Acierto
+                                  Probabilidad
                                   <span
                                     className={
                                       ordenCampo === "porcentaje_acierto"
@@ -226,7 +263,7 @@ export default function Analisis() {
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[120px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[105px] cursor-pointer select-none"
                                 onClick={() => handleOrden("cuota_estim_real")}
                               >
                                 <div className="flex items-center gap-1">
@@ -247,12 +284,12 @@ export default function Analisis() {
                                 </div>
                               </th>
 
-                              <th className="px-4 py-2 w-[120px]">
+                              <th className="px-4 py-2 w-[105px]">
                                 Cuota casa
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[120px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[105px] cursor-pointer select-none"
                                 onClick={() => handleOrden("valor_estimado")}
                               >
                                 <div className="flex items-center gap-1">
@@ -276,7 +313,7 @@ export default function Analisis() {
                           </thead>
                           <tbody>
                             {partidosLiga.map((p) => (
-                              <tr key={p.id} className="hover:bg-gray-50">
+                              <tr key={p.id} className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0">
                                 <td className="px-4 py-2 text-gray-700">
                                   {format(
                                     new Date(
@@ -332,7 +369,7 @@ export default function Analisis() {
                       </div>
                     ) : (
                       <p className="px-4 py-2 text-gray-500">
-                        No hay partidos disponibles.
+                        No hay partidos.
                       </p>
                     )}
                   </div>
