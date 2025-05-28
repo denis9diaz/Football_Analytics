@@ -114,7 +114,7 @@ export default function Analisis() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-8">
+    <div className="analisis-page flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-8">
       <MetodosSidebar
         metodoSeleccionado={metodoSeleccionado}
         onSeleccionar={setMetodoSeleccionado}
@@ -332,14 +332,14 @@ export default function Analisis() {
                                   )}
                                 </td>
                                 <td className="px-4 py-2 font-medium text-gray-800">
-                                  {p.partido.equipo_local} vs{" "}
+                                  {p.partido.equipo_local} -{" "}
                                   {p.partido.equipo_visitante}
                                 </td>
                                 <td className="px-4 py-2 text-blue-600 font-semibold">
                                   {p.porcentaje_acierto
                                     ? `${parseFloat(
                                         p.porcentaje_acierto
-                                      ).toFixed(2)}%`
+                                      ).toFixed(1)}%`
                                     : "-"}
                                 </td>
                                 <td className="px-4 py-2 text-gray-800 font-semibold">
@@ -360,8 +360,12 @@ export default function Analisis() {
                                   }}
                                 >
                                   {p.valor_estimado
-                                    ? `${parseFloat(p.valor_estimado).toFixed(
-                                        2
+                                    ? `${
+                                        parseFloat(p.valor_estimado) >= 0
+                                          ? "+"
+                                          : ""
+                                      }${parseFloat(p.valor_estimado).toFixed(
+                                        0
                                       )}%`
                                     : "-"}
                                 </td>
