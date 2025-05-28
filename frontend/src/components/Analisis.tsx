@@ -114,7 +114,7 @@ export default function Analisis() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 pt-4">
+    <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-8">
       <MetodosSidebar
         metodoSeleccionado={metodoSeleccionado}
         onSeleccionar={setMetodoSeleccionado}
@@ -313,7 +313,10 @@ export default function Analisis() {
                           </thead>
                           <tbody>
                             {partidosLiga.map((p) => (
-                              <tr key={p.id} className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0">
+                              <tr
+                                key={p.id}
+                                className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+                              >
                                 <td className="px-4 py-2 text-gray-700">
                                   {format(
                                     new Date(

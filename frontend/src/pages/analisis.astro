@@ -1,13 +1,15 @@
 ---
-import Layout from '../layouts/Layout.astro';
-import Navbar from '../components/Navbar.astro';
-import '../styles/global.css';
-import AnalisisComponent from '../components/Analisis.tsx';
+import Layout from "../layouts/Layout.astro";
+import Navbar from "../components/Navbar.astro";
+import "../styles/global.css";
+import AnalisisComponent from "../components/Analisis.tsx";
 ---
 
 <Layout>
   <Navbar />
-  <main class="max-w-6xl mx-auto mt-8 px-4 py-10">
-    <AnalisisComponent client:load />
-  </main>
+  <div class="bg-white min-h-screen w-full">
+    <main class="max-w-6xl mx-auto pt-8 px-4 py-10">
+      <AnalisisComponent client:load />
+    </main>
+  </div>
 </Layout>
