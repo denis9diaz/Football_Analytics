@@ -1,0 +1,108 @@
+---
+import Layout from "../layouts/Layout.astro";
+import "../styles/global.css";
+---
+<Layout>
+  <section class="max-w-5xl mx-auto px-4 py-16 text-center mt-8">
+    <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8">
+      <h2 class="text-2xl font-bold text-blue-600 mb-8">Crear cuenta</h2>
+      <form class="space-y-6 text-left" onsubmit="handleSubmit(event)">
+        <div>
+          <label for="username" class="block text-sm font-medium text-gray-700 mb-2">
+            Nombre de usuario o correo electrónico
+          </label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-600 focus:border-blue-600"
+            required
+          />
+        </div>
+        <div>
+          <label for="password" class="block text-sm font-medium text-gray-700 mb-2">Contraseña</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="password"
+              name="password"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-600 focus:border-blue-600 pr-10"
+              required
+            />
+            <button
+              type="button"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 cursor-pointer"
+              onclick="togglePasswordVisibility('password', this)"
+            >
+              <i class="fa-solid fa-eye-slash"></i>
+            </button>
+          </div>
+        </div>
+        <div>
+          <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-2">Repetir contraseña</label>
+          <div class="relative">
+            <input
+              type="password"
+              id="confirm-password"
+              name="confirm-password"
+              class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-600 focus:border-blue-600 pr-10"
+              required
+            />
+            <button
+              type="button"
+              class="absolute inset-y-0 right-0 flex items-center px-3 text-gray-500 cursor-pointer"
+              onclick="togglePasswordVisibility('confirm-password', this)"
+            >
+              <i class="fa-solid fa-eye-slash"></i>
+            </button>
+          </div>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition cursor-pointer"
+        >
+          Registrarse
+        </button>
+      </form>
+      <p class="text-sm text-gray-600 mt-4">
+        ¿Ya tienes cuenta?
+        <a href="/login" class="text-blue-600 hover:underline">Iniciar sesión</a> |
+        <a href="/forgot-password" class="text-blue-600 hover:underline">¿Olvidaste tu contraseña?</a>
+      </p>
+    </div>
+  </section>
+
+  <!-- FontAwesome CDN pública -->
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+    integrity="sha512-Bx3I2e/1tO91xf1P5zKZf2m1OBNWTJ8RjAhhxzCyEpzYq58r5BNcuWkOfmGM6OhnvUu5fFWhv5ZK+aYcGNq4sA=="
+    crossorigin="anonymous"
+    referrerpolicy="no-referrer"
+  />
+
+  <!-- Funciones JS accesibles globalmente -->
+  <script is:inline>
+    window.togglePasswordVisibility = function (inputId, button) {
+      const input = document.getElementById(inputId);
+      const icon = button.querySelector("i");
+
+      if (input.type === "password") {
+        input.type = "text";
+        icon.classList.remove("fa-eye-slash");
+        icon.classList.add("fa-eye");
+      } else {
+        input.type = "password";
+        icon.classList.remove("fa-eye");
+        icon.classList.add("fa-eye-slash");
+      }
+    };
+
+    window.handleSubmit = function (event) {
+      event.preventDefault();
+      // Aquí puedes añadir lógica para enviar el formulario con JS o dejar que el formulario actúe normalmente.
+      // Si lo dejas vacío, el formulario hará submit como de costumbre si no hay JS adicional.
+      event.target.submit(); // Enviar de forma tradicional
+    };
+  </script>
+</Layout>
