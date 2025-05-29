@@ -125,7 +125,7 @@ export default function Analisis() {
   };
 
   return (
-    <div className="analisis-page flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-8">
+    <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-8">
       <MetodosSidebar
         metodoSeleccionado={metodoSeleccionado}
         onSeleccionar={setMetodoSeleccionado}
