@@ -1,11 +1,11 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from django.db.models import Q
-from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
+from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis, RachaEquipo
 from random import uniform
 
 class Command(BaseCommand):
-    help = 'Analiza partidos del día para el método Gol HT'
+    help = 'Analiza partidos del día para el método Over 0.5 HT'
 
     def handle(self, *args, **kwargs):
         hoy = now().date()
@@ -21,41 +21,43 @@ class Command(BaseCommand):
             local = partido.equipo_local
             visitante = partido.equipo_visitante
 
-            historial_local = Partido.objects.filter(
-                Q(equipo_local=local) | Q(equipo_visitante=local),
-                goles_local_ht__isnull=False,
-                goles_visitante_ht__isnull=False
-            ).order_by('-fecha')
+            def calcular_prob(equipo):
+                historial = Partido.objects.filter(
+                    Q(equipo_local=equipo) | Q(equipo_visitante=equipo),
+                    goles_local_ht__isnull=False,
+                    goles_visitante_ht__isnull=False,
+                    fecha__lt=partido.fecha
+                ).order_by('-fecha')
 
-            historial_visitante = Partido.objects.filter(
-                Q(equipo_local=visitante) | Q(equipo_visitante=visitante),
-                goles_local_ht__isnull=False,
-                goles_visitante_ht__isnull=False
-            ).order_by('-fecha')
-
-            def calcular_prob(historial):
                 total = historial.count()
                 if total == 0:
-                    return 0.5
+                    return 0.5  # valor neutral si no hay datos
 
                 con_gol = sum(1 for p in historial if (p.goles_local_ht + p.goles_visitante_ht) > 0)
                 porcentaje = con_gol / total
 
-                ultimo = historial.first()
-                if ultimo and (ultimo.goles_local_ht + ultimo.goles_visitante_ht == 0):
-                    prob = 1 - (1 - porcentaje) ** 2
+                # Calculamos la racha actual de partidos SIN gol al descanso
+                racha = 0
+                for p in historial:
+                    if (p.goles_local_ht + p.goles_visitante_ht) > 0:
+                        break
+                    racha += 1
+
+                # Aplicamos fórmula de Laplace si racha > 0
+                if racha > 0:
+                    prob = 1 - (1 - porcentaje) ** (racha + 1)
                 else:
                     prob = porcentaje
 
                 return prob
 
-            prob_local = calcular_prob(historial_local)
-            prob_visitante = calcular_prob(historial_visitante)
+            prob_local = calcular_prob(local)
+            prob_visitante = calcular_prob(visitante)
 
             prob_media = (prob_local + prob_visitante) / 2
             cuota_real = round(1 / prob_media, 2) if prob_media > 0 else 99.99
             cuota_casa = round(max(cuota_real + uniform(-0.3, 0.3), 1.00), 2)
-            valor_estimado = round(( cuota_casa / cuota_real - 1) * 100, 2)
+            valor_estimado = round((cuota_casa / cuota_real - 1) * 100, 2)
 
             PartidoAnalisis.objects.create(
                 metodo=metodo,
