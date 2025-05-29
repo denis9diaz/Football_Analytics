@@ -27,6 +27,7 @@ type PartidoAnalizado = {
   cuota_casa_apuestas: string;
   valor_estimado: string;
   porcentaje_acierto: string;
+  equipo_destacado?: "local" | "visitante";
 };
 
 export default function Analisis() {
@@ -49,7 +50,15 @@ export default function Analisis() {
     )
       .then((res) => res.json())
       .then((data: PartidoAnalizado[]) => {
-        setPartidos(data);
+        const duplicados =
+          metodoSeleccionado === "TTS"
+            ? data.flatMap((p) => {
+                if (!p.equipo_destacado) return [];
+                return [p];
+              })
+            : data;
+
+        setPartidos(duplicados);
 
         const ligasUnicas = Array.from(
           new Set<string>(data.map((p) => JSON.stringify(p.partido.liga)))
@@ -60,8 +69,10 @@ export default function Analisis() {
       });
   }, [metodoSeleccionado]);
 
-  const partidosFiltradosPorFecha = partidos.filter((p) =>
-    isSameDay(parseISO(p.partido.fecha), fechaSeleccionada)
+  const partidosFiltradosPorFecha = partidos.filter(
+    (p) =>
+      p.partido.fecha.slice(0, 10) ===
+      fechaSeleccionada.toISOString().slice(0, 10)
   );
 
   const partidosAgrupados = partidosFiltradosPorFecha.reduce((acc, partido) => {
@@ -332,8 +343,25 @@ export default function Analisis() {
                                   )}
                                 </td>
                                 <td className="px-4 py-2 font-medium text-gray-800">
-                                  {p.partido.equipo_local} -{" "}
-                                  {p.partido.equipo_visitante}
+                                  <span
+                                    className={
+                                      p.equipo_destacado === "local"
+                                        ? "font-bold"
+                                        : ""
+                                    }
+                                  >
+                                    {p.partido.equipo_local}
+                                  </span>{" "}
+                                  -{" "}
+                                  <span
+                                    className={
+                                      p.equipo_destacado === "visitante"
+                                        ? "font-bold"
+                                        : ""
+                                    }
+                                  >
+                                    {p.partido.equipo_visitante}
+                                  </span>
                                 </td>
                                 <td className="px-4 py-2 text-blue-600 font-semibold">
                                   {p.porcentaje_acierto
