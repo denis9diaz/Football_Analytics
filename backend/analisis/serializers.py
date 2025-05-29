@@ -18,8 +18,10 @@ class PartidoSerializer(serializers.ModelSerializer):
             'goles_local_ht', 'goles_visitante_ht',
             'goles_local_ft', 'goles_visitante_ft',
             'resultado_1x2', 'over_1_5', 'over_2_5', 'btts',
-            'marco_local', 'marco_visitante', 'over_1_5_local'
+            'marco_local', 'marco_visitante', 'over_1_5_local',
+            'gol_ht',  # ✅ añadimos este campo
         ]
+        read_only_fields = ['gol_ht']
 
 class PartidoAnalisisSerializer(serializers.ModelSerializer):
     partido = PartidoSerializer()  # anidamos partido con liga ya expandida
@@ -36,4 +38,5 @@ class PartidoAnalisisSerializer(serializers.ModelSerializer):
             'valor_estimado',
             'favorito',
             'porcentaje_acierto',
+            'equipo_destacado',
         ]
