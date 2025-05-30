@@ -40,8 +40,13 @@ export default function Analisis() {
   const [ordenCampo, setOrdenCampo] = useState<string | null>(null);
   const [ordenAscendente, setOrdenAscendente] = useState<boolean>(true);
 
+  const [isCargando, setIsCargando] = useState(true);
+
   useEffect(() => {
-    if (!metodoSeleccionado) return;
+    if (!metodoSeleccionado) {
+      setIsCargando(false);
+      return;
+    }
 
     fetch(
       `${API_URL}/api/partidos-analisis/${encodeURIComponent(
@@ -66,6 +71,12 @@ export default function Analisis() {
 
         setLigas(ligasUnicas);
         setLigaFiltrada(null);
+
+        setIsCargando(false);
+      })
+      .catch((err) => {
+        console.error("Error al cargar análisis:", err);
+        setIsCargando(false);
       });
   }, [metodoSeleccionado]);
 
@@ -132,7 +143,12 @@ export default function Analisis() {
       />
 
       <div className="flex-1">
-        {metodoSeleccionado ? (
+        {isCargando ? (
+          <div className="flex justify-center items-center h-[300px] text-gray-500 text-lg">
+            <i className="fas fa-spinner fa-spin mr-2"></i>
+            Cargando análisis...
+          </div>
+        ) : metodoSeleccionado ? (
           <>
             <div className="flex justify-between items-center mb-4">
               <div className="text-sm font-medium text-gray-700">
