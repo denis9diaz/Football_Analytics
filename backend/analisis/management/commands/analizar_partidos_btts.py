@@ -27,21 +27,27 @@ class Command(BaseCommand):
                         goles_local_ft__isnull=False,
                         goles_visitante_ft__isnull=False,
                         fecha__lt=fecha_limite
-                    )
+                    ).order_by('-fecha')
                 else:
                     partidos = Partido.objects.filter(
                         equipo_visitante=equipo,
                         goles_local_ft__isnull=False,
                         goles_visitante_ft__isnull=False,
                         fecha__lt=fecha_limite
-                    )
+                    ).order_by('-fecha')
 
                 total = partidos.count()
                 if total == 0:
-                    return 0.5  # valor neutro si no hay datos
+                    return 0.0
 
-                cumple = partidos.filter(goles_local_ft__gt=0, goles_visitante_ft__gt=0).count()
-                return cumple / total
+                cumple = [
+                    p.goles_local_ft > 0 and p.goles_visitante_ft > 0
+                    for p in partidos
+                ]
+                if total == 1 and not cumple[0]:
+                    return 0.0
+
+                return sum(cumple) / total
 
             prob_local = calcular_btts(local, como_local=True, fecha_limite=partido.fecha)
             prob_visit = calcular_btts(visitante, como_local=False, fecha_limite=partido.fecha)

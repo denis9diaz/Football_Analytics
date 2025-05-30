@@ -29,33 +29,26 @@ class Command(BaseCommand):
                     fecha__lt=fecha_limite
                 ).order_by('-fecha')
 
-                total = historial.count()
-                if total == 0:
-                    self.stdout.write(f"🔍 {equipo}: sin partidos anteriores válidos")
-                    return 0.5  # valor neutro
+                if not historial.exists():
+                    return 0.0
 
-                self.stdout.write(f"\n🔎 {equipo} - partidos analizados (Over 1.5):")
-                cumple = []
-                for p in historial:
-                    goles = p.goles_local_ft + p.goles_visitante_ft
-                    cumple.append(goles > 1)
-                    self.stdout.write(f"  • {p.fecha} {p.equipo_local} vs {p.equipo_visitante} → Goles: {goles} → {'✅' if goles > 1 else '❌'}")
+                cumple = [
+                    (p.goles_local_ft + p.goles_visitante_ft) > 1
+                    for p in historial
+                ]
 
-                porcentaje = sum(cumple) / total
+                total = len(cumple)
+                aciertos = sum(cumple)
 
-                racha = 0
-                for ok in cumple:
-                    if ok:
-                        break
-                    racha += 1
+                if aciertos == 0:
+                    return 0.0
 
-                if racha > 0:
-                    prob = 1 - ((1 - porcentaje) ** (racha + 1))
-                else:
-                    prob = porcentaje
+                porcentaje = aciertos / total
 
-                self.stdout.write(f"👉 % partidos Over 1.5: {round(porcentaje*100,2)}%, racha sin cumplir: {racha}, prob final: {round(prob*100,2)}%\n")
-                return prob
+                if not cumple[0]:  # si el partido más reciente NO cumplió
+                    racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
+                    return 1 - ((1 - porcentaje) ** (racha + 1))
+                return porcentaje
 
             prob_local = calcular_prob(local, partido.fecha)
             prob_visit = calcular_prob(visitante, partido.fecha)
@@ -75,5 +68,5 @@ class Command(BaseCommand):
             )
 
             self.stdout.write(self.style.SUCCESS(
-                f"{partido} -> prob: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor}%"
+                f"{partido} -> Over 1.5: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor}%"
             ))

@@ -27,13 +27,16 @@ class Command(BaseCommand):
                     goles_local_ft__isnull=False,
                     goles_visitante_ft__isnull=False,
                     fecha__lt=fecha_limite
-                )
+                ).order_by('-fecha')
 
                 total = partidos.count()
                 if total == 0:
-                    return 0.5  # valor neutro
+                    return 0.0
 
                 victorias = partidos.filter(goles_local_ft__gt=F('goles_visitante_ft')).count()
+                if total == 1 and victorias == 0:
+                    return 0.0
+
                 return victorias / total
 
             def calcular_derrotas_visitante(equipo, fecha_limite):
@@ -42,13 +45,16 @@ class Command(BaseCommand):
                     goles_local_ft__isnull=False,
                     goles_visitante_ft__isnull=False,
                     fecha__lt=fecha_limite
-                )
+                ).order_by('-fecha')
 
                 total = partidos.count()
                 if total == 0:
-                    return 0.5
+                    return 0.0
 
                 derrotas = partidos.filter(goles_local_ft__gt=F('goles_visitante_ft')).count()
+                if total == 1 and derrotas == 0:
+                    return 0.0
+
                 return derrotas / total
 
             prob_local = calcular_victorias_local(local, partido.fecha)

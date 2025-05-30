@@ -56,36 +56,25 @@ class Command(BaseCommand):
                 else:
                     return 0.0
 
-                total = partidos.count()
-                if total == 0:
-                    self.stdout.write(f"🔍 {equipo} [{contexto}] → sin partidos anteriores válidos")
+                if not partidos.exists():
                     return 0.0
 
-                self.stdout.write(f"\n🔎 {equipo} [{contexto}] - partidos analizados:")
-                for p in partidos:
-                    valor = getattr(p, goles)
-                    self.stdout.write(f"  • {p.fecha} vs {p.equipo_local} - {p.equipo_visitante} → {'✅' if valor else '❌'}")
+                cumple = [bool(getattr(p, goles)) for p in partidos]
+                total = len(cumple)
+                aciertos = sum(cumple)
 
-                marcados = partidos.filter(**{goles: True})
-                porcentaje = marcados.count() / total
+                if aciertos == 0:
+                    return 0.0
 
-                racha = 0
-                for p in partidos:
-                    if getattr(p, goles):
-                        break
-                    racha += 1
+                porcentaje = aciertos / total
 
-                if racha > 0:
-                    prob = 1 - ((1 - porcentaje) ** (racha + 1))
-                else:
-                    prob = porcentaje
-
-                self.stdout.write(f"👉 % marcados: {round(porcentaje*100,2)}%, racha sin marcar: {racha}, prob final: {round(prob*100,2)}%\n")
-                return prob
+                if not cumple[0]:  # Si el más reciente fue fallo
+                    racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
+                    return 1 - ((1 - porcentaje) ** (racha + 1))
+                return porcentaje
 
             # LOCAL MARCA
             if 'local' not in ya_creados:
-                self.stdout.write(f"\n🟦 Análisis LOCAL: {partido}")
                 prob_local = (
                     calcular_prob_marcar(local, 'local', partido.fecha) +
                     calcular_prob_marcar(visitante, 'visitante_recibe', partido.fecha)
@@ -111,7 +100,6 @@ class Command(BaseCommand):
 
             # VISITANTE MARCA
             if 'visitante' not in ya_creados:
-                self.stdout.write(f"\n🟥 Análisis VISITANTE: {partido}")
                 prob_visit = (
                     calcular_prob_marcar(visitante, 'visitante', partido.fecha) +
                     calcular_prob_marcar(local, 'local_recibe', partido.fecha)

@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from django.db.models import Q
-from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis, RachaEquipo
+from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
 from random import uniform
 
 class Command(BaseCommand):
@@ -31,30 +31,22 @@ class Command(BaseCommand):
 
                 total = historial.count()
                 if total == 0:
-                    return 0.5  # valor neutral si no hay datos
+                    return None  # sin datos, omitir
 
-                con_gol = sum(1 for p in historial if (p.goles_local_ht + p.goles_visitante_ht) > 0)
-                porcentaje = con_gol / total
+                cumple = [(p.goles_local_ht + p.goles_visitante_ht) > 0 for p in historial]
+                porcentaje = sum(cumple) / total
 
-                # Calculamos la racha actual de partidos SIN gol al descanso
-                racha = 0
-                for p in historial:
-                    if (p.goles_local_ht + p.goles_visitante_ht) > 0:
-                        break
-                    racha += 1
+                if not cumple[0]:
+                    racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
+                    return 1 - ((1 - porcentaje) ** (racha + 1))
+                return porcentaje
 
-                # Aplicamos fórmula de Laplace si racha > 0
-                if racha > 0:
-                    prob = 1 - (1 - porcentaje) ** (racha + 1)
-                else:
-                    prob = porcentaje
+            probs = [p for p in [calcular_prob(local), calcular_prob(visitante)] if p is not None]
+            if not probs:
+                self.stdout.write(self.style.WARNING(f"{partido}: Sin datos suficientes"))
+                continue
 
-                return prob
-
-            prob_local = calcular_prob(local)
-            prob_visitante = calcular_prob(visitante)
-
-            prob_media = (prob_local + prob_visitante) / 2
+            prob_media = sum(probs) / len(probs)
             cuota_real = round(1 / prob_media, 2) if prob_media > 0 else 99.99
             cuota_casa = round(max(cuota_real + uniform(-0.3, 0.3), 1.00), 2)
             valor_estimado = round((cuota_casa / cuota_real - 1) * 100, 2)
@@ -69,5 +61,5 @@ class Command(BaseCommand):
             )
 
             self.stdout.write(self.style.SUCCESS(
-                f"{partido} -> prob: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor_estimado}%"
+                f"{partido} -> Over 0.5 HT: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor_estimado}%"
             ))

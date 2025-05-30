@@ -27,25 +27,22 @@ class Command(BaseCommand):
                     fecha__lt=fecha_limite
                 ).order_by('-fecha')
 
-                total = partidos.count()
-                if total == 0:
-                    return 0.5  # valor neutro
+                if not partidos.exists():
+                    return 0.0
 
-                cumple = [p for p in partidos if p.goles_local_ft >= 2]
-                porcentaje = len(cumple) / total
+                cumple = [p.goles_local_ft >= 2 for p in partidos]
+                total = len(cumple)
+                aciertos = sum(cumple)
 
-                racha = 0
-                for p in partidos:
-                    if p.goles_local_ft >= 2:
-                        break
-                    racha += 1
+                if aciertos == 0:
+                    return 0.0
 
-                if racha > 0:
-                    prob = 1 - ((1 - porcentaje) ** (racha + 1))
-                else:
-                    prob = porcentaje
+                porcentaje = aciertos / total
 
-                return prob
+                if not cumple[0]:
+                    racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
+                    return 1 - ((1 - porcentaje) ** (racha + 1))
+                return porcentaje
 
             def calcular_prob_visitante_recibe(equipo, fecha_limite):
                 partidos = Partido.objects.filter(
@@ -54,25 +51,22 @@ class Command(BaseCommand):
                     fecha__lt=fecha_limite
                 ).order_by('-fecha')
 
-                total = partidos.count()
-                if total == 0:
-                    return 0.5
+                if not partidos.exists():
+                    return 0.0
 
-                cumple = [p for p in partidos if p.goles_local_ft >= 2]
-                porcentaje = len(cumple) / total
+                cumple = [p.goles_local_ft >= 2 for p in partidos]
+                total = len(cumple)
+                aciertos = sum(cumple)
 
-                racha = 0
-                for p in partidos:
-                    if p.goles_local_ft >= 2:
-                        break
-                    racha += 1
+                if aciertos == 0:
+                    return 0.0
 
-                if racha > 0:
-                    prob = 1 - ((1 - porcentaje) ** (racha + 1))
-                else:
-                    prob = porcentaje
+                porcentaje = aciertos / total
 
-                return prob
+                if not cumple[0]:
+                    racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
+                    return 1 - ((1 - porcentaje) ** (racha + 1))
+                return porcentaje
 
             prob_local = calcular_prob_local(local, partido.fecha)
             prob_recibe = calcular_prob_visitante_recibe(visitante, partido.fecha)

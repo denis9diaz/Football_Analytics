@@ -58,6 +58,13 @@ class Partido(models.Model):
     def save(self, *args, **kwargs):
         if self.goles_local_ht is not None and self.goles_visitante_ht is not None:
             self.gol_ht = (self.goles_local_ht + self.goles_visitante_ht) > 0
+
+        if self.goles_local_ft is not None:
+            self.marco_local = self.goles_local_ft > 0
+
+        if self.goles_visitante_ft is not None:
+            self.marco_visitante = self.goles_visitante_ft > 0
+
         super().save(*args, **kwargs)
 
     def __str__(self):
