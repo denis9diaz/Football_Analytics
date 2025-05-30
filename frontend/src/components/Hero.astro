@@ -1,17 +1,18 @@
 ---
+import 'animate.css';
 import Footer from './Footer.astro';
 ---
 
 <section class="relative min-h-[100vh] w-full flex items-center justify-center px-4 py-20 overflow-hidden">
 
-  <div class="relative z-10 max-w-6xl w-full text-center flex flex-col items-center">
-    <h1 class="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 drop-shadow-lg">
+  <div class="relative z-10 max-w-6xl w-full text-center flex flex-col items-center animate__animated animate__fadeIn">
+    <h1 class="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 drop-shadow-lg animate__animated animate__fadeInDown">
       Tu ventaja en apuestas deportivas: análisis y valor
     </h1>
-    <p class="text-lg sm:text-xl text-gray-700 max-w-2xl mx-auto mb-12 font-medium">
+    <p class="text-lg sm:text-xl text-gray-700 max-w-2xl mx-auto mb-12 font-medium animate__animated animate__fadeInUp">
       Análisis profesional, métodos estadísticos rentables y ligas seleccionadas por su fiabilidad. Descubre los partidos con mayor probabilidad y valor
     </p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14 w-full">
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14 w-full animate__animated animate__zoomIn">
       <!-- Tarjeta 1 -->
       <div class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-100 hover:scale-105 hover:shadow-xl transition-transform duration-200">
         <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-2">
@@ -41,7 +42,7 @@ import Footer from './Footer.astro';
         <p class="text-gray-800 text-base font-semibold">Guarda tus partidos favoritos y toma decisiones con criterio y confianza.</p>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row justify-center gap-4">
+    <div class="flex flex-col sm:flex-row justify-center gap-4 animate__animated animate__fadeInUp">
       <a
         href="/analisis"
         class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition text-lg"
