@@ -428,7 +428,7 @@ export default function Analisis() {
               })}
           </>
         ) : (
-          <p className="text-gray-500">Selecciona un método para comenzar.</p>
+          <p className="text-gray-500">Selecciona un método para ver los análisis.</p>
         )}
       </div>
     </div>
