@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
+import "animate.css";
 ---
 
 <Layout>
@@ -11,7 +12,8 @@ import "../styles/global.css";
       <!-- Plan mensual -->
       <div
         tabindex="0"
-        class="plan-card flex-1 min-w-[260px] max-w-[340px] bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8 flex flex-col justify-between cursor-pointer transition-all duration-200 focus-within:border-blue-600 hover:border-blue-600 mx-auto"
+        class="plan-card flex-1 min-w-[260px] max-w-[340px] bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8 flex flex-col justify-between cursor-pointer transition-all duration-200 focus-within:border-blue-600 hover:border-blue-600 mx-auto animate__animated animate__fadeInUp"
+        style="animation-delay: 0.2s;"
         data-plan="mensual"
       >
         <h2 class="text-xl font-bold text-blue-600 mb-2">Mensual</h2>
@@ -31,7 +33,8 @@ import "../styles/global.css";
       <!-- Plan trimestral -->
       <div
         tabindex="0"
-        class="plan-card flex-1 min-w-[260px] max-w-[340px] bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8 flex flex-col justify-between cursor-pointer transition-all duration-200 focus-within:border-blue-600 hover:border-blue-600 mx-auto"
+        class="plan-card flex-1 min-w-[260px] max-w-[340px] bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8 flex flex-col justify-between cursor-pointer transition-all duration-200 focus-within:border-blue-600 hover:border-blue-600 mx-auto animate__animated animate__fadeInUp"
+        style="animation-delay: 0.4s;"
         data-plan="trimestral"
       >
         <h2 class="text-xl font-bold text-blue-600 mb-2">Trimestral</h2>
@@ -51,7 +54,8 @@ import "../styles/global.css";
       <!-- Plan anual -->
       <div
         tabindex="0"
-        class="plan-card flex-1 min-w-[260px] max-w-[340px] bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8 flex flex-col justify-between cursor-pointer transition-all duration-200 focus-within:border-blue-600 hover:border-blue-600 mx-auto"
+        class="plan-card flex-1 min-w-[260px] max-w-[340px] bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8 flex flex-col justify-between cursor-pointer transition-all duration-200 focus-within:border-blue-600 hover:border-blue-600 mx-auto animate__animated animate__fadeInUp"
+        style="animation-delay: 0.6s;"
         data-plan="anual"
       >
         <h2 class="text-xl font-bold text-blue-600 mb-2">Anual</h2>
