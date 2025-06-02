@@ -41,7 +41,7 @@ export default function Analisis() {
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [partidos, setPartidos] = useState<PartidoAnalizado[]>([]);
   const [ligaFiltrada, setLigaFiltrada] = useState<number | null>(null);
-  const [metodoSeleccionado, setMetodoSeleccionado] = useState<string>("");
+  const [metodoSeleccionado, setMetodoSeleccionado] = useState<string>("TTS");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
   const [ordenCampo, setOrdenCampo] = useState<string | null>(null);
