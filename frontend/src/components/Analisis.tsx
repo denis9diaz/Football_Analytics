@@ -503,7 +503,13 @@ export default function Analisis() {
                                   className="px-2 py-2 text-center cursor-pointer text-xl"
                                   onClick={() => toggleFavorito(p.id)}
                                 >
-                                  {esFavorito(p.id) ? "⭐" : "☆"}
+                                  <i
+                                    className={`fas fa-star transition-colors duration-200 ${
+                                      esFavorito(p.id)
+                                        ? "text-yellow-400"
+                                        : "text-gray-300 hover:text-yellow-400"
+                                    }`}
+                                  />
                                 </td>
                               </tr>
                             ))}

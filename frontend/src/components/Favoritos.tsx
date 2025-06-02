@@ -90,7 +90,9 @@ export default function Favoritos() {
         <div className="flex justify-end mb-6">
           <div className="relative flex items-center gap-1 sm:gap-2">
             <button
-              onClick={() => setFechaSeleccionada(subDays(fechaSeleccionada, 1))}
+              onClick={() =>
+                setFechaSeleccionada(subDays(fechaSeleccionada, 1))
+              }
               className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-200 cursor-pointer text-sm"
             >
               ←
@@ -101,11 +103,15 @@ export default function Favoritos() {
             >
               <i className="fas fa-calendar-alt text-sm" />
               <span className="font-medium truncate">
-                {format(fechaSeleccionada, "dd/MM EEE", { locale: es }).toUpperCase()}
+                {format(fechaSeleccionada, "dd/MM EEE", {
+                  locale: es,
+                }).toUpperCase()}
               </span>
             </button>
             <button
-              onClick={() => setFechaSeleccionada(addDays(fechaSeleccionada, 1))}
+              onClick={() =>
+                setFechaSeleccionada(addDays(fechaSeleccionada, 1))
+              }
               className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-gray-200 cursor-pointer text-sm"
             >
               →
@@ -135,7 +141,9 @@ export default function Favoritos() {
             Cargando favoritos...
           </div>
         ) : Object.keys(favoritosPorMetodo).length === 0 ? (
-          <p className="text-gray-500">No tienes partidos guardados como favoritos.</p>
+          <p className="text-gray-500">
+            No tienes partidos guardados como favoritos.
+          </p>
         ) : (
           Object.entries(favoritosPorMetodo).map(([metodo, favs]) => {
             const favoritosPorLiga = favs.reduce((acc, f) => {
@@ -147,87 +155,131 @@ export default function Favoritos() {
 
             return (
               <div key={metodo} className="mb-8">
-                <h2 className="text-lg font-bold text-blue-600 mb-2">{metodo}</h2>
+                <h2 className="text-lg font-bold text-blue-900 mb-2">
+                  {metodo}
+                </h2>
 
-                {Object.entries(favoritosPorLiga).map(([ligaId, favoritosLiga]) => {
-                  const liga = favoritosLiga[0].partido_analisis.partido.liga;
+                {Object.entries(favoritosPorLiga).map(
+                  ([ligaId, favoritosLiga]) => {
+                    const liga = favoritosLiga[0].partido_analisis.partido.liga;
 
-                  return (
-                    <div key={ligaId} className="mb-4">
-                      <div className="flex items-center justify-between px-4 py-2 bg-blue-100 text-sm font-semibold text-blue-900 uppercase rounded-t">
-                        {liga.nombre}
-                      </div>
-                      <div className="overflow-x-auto border border-gray-200 rounded-b">
-                        <table className="min-w-[650px] w-full text-sm text-left table-fixed">
-                          <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
-                            <tr>
-                              <th className="px-4 py-2 w-[90px]">Hora</th>
-                              <th className="px-4 py-2 min-w-[200px]">Partido</th>
-                              <th className="px-4 py-2 w-[115px]">Probabilidad</th>
-                              <th className="px-4 py-2 w-[105px]">Cuota real</th>
-                              <th className="px-4 py-2 w-[105px]">Cuota casa</th>
-                              <th className="px-4 py-2 w-[105px]">% Valor</th>
-                              <th className="px-2 py-2 w-[40px] text-center">★</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {favoritosLiga.map((f) => {
-                              const p = f.partido_analisis;
-                              return (
-                                <tr key={f.id} className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0">
-                                  <td className="px-4 py-2 text-gray-700">
-                                    {format(new Date(p.partido.fecha), "HH:mm", { locale: es })}
-                                  </td>
-                                  <td className="px-4 py-2 font-medium text-gray-800">
-                                    <span className={p.equipo_destacado === "local" ? "font-bold" : ""}>
-                                      {p.partido.equipo_local}
-                                    </span>{" "}
-                                    -{" "}
-                                    <span className={p.equipo_destacado === "visitante" ? "font-bold" : ""}>
-                                      {p.partido.equipo_visitante}
-                                    </span>
-                                  </td>
-                                  <td className="px-4 py-2 text-blue-600 font-semibold">
-                                    {p.porcentaje_acierto
-                                      ? `${parseFloat(p.porcentaje_acierto).toFixed(1)}%`
-                                      : "-"}
-                                  </td>
-                                  <td className="px-4 py-2 text-gray-800 font-semibold">
-                                    {p.cuota_estim_real}
-                                  </td>
-                                  <td className="px-4 py-2 text-gray-800 font-semibold">
-                                    {p.cuota_casa_apuestas}
-                                  </td>
-                                  <td
-                                    className="px-4 py-2 font-semibold"
-                                    style={{
-                                      color:
-                                        parseFloat(p.valor_estimado) > 0
-                                          ? "#16a34a"
-                                          : parseFloat(p.valor_estimado) < 0
-                                          ? "#dc2626"
-                                          : undefined,
-                                    }}
+                    return (
+                      <div key={ligaId} className="mb-4">
+                        <div className="flex items-center justify-between px-4 py-2 bg-blue-100 text-sm font-semibold text-blue-900 uppercase rounded-t">
+                          {liga.nombre}
+                        </div>
+                        <div className="overflow-x-auto border border-gray-200 rounded-b">
+                          <table className="min-w-[650px] w-full text-sm text-left table-fixed">
+                            <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+                              <tr>
+                                <th className="px-4 py-2 w-[90px]">Hora</th>
+                                <th className="px-4 py-2 min-w-[200px]">
+                                  Partido
+                                </th>
+                                <th className="px-4 py-2 w-[115px]">
+                                  Probabilidad
+                                </th>
+                                <th className="px-4 py-2 w-[105px]">
+                                  Cuota real
+                                </th>
+                                <th className="px-4 py-2 w-[105px]">
+                                  Cuota casa
+                                </th>
+                                <th className="px-4 py-2 w-[105px]">% Valor</th>
+                                <th className="px-2 py-2 w-[40px] text-center">
+                                  ★
+                                </th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {favoritosLiga.map((f) => {
+                                const p = f.partido_analisis;
+                                return (
+                                  <tr
+                                    key={f.id}
+                                    className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
                                   >
-                                    {p.valor_estimado
-                                      ? `${parseFloat(p.valor_estimado) >= 0 ? "+" : ""}${parseFloat(p.valor_estimado).toFixed(0)}%`
-                                      : "-"}
-                                  </td>
-                                  <td
-                                    className="px-2 py-2 text-center cursor-pointer text-xl"
-                                    onClick={() => toggleFavorito(f.id)}
-                                  >
-                                    ⭐
-                                  </td>
-                                </tr>
-                              );
-                            })}
-                          </tbody>
-                        </table>
+                                    <td className="px-4 py-2 text-gray-700">
+                                      {format(
+                                        new Date(p.partido.fecha),
+                                        "HH:mm",
+                                        { locale: es }
+                                      )}
+                                    </td>
+                                    <td className="px-4 py-2 font-medium text-gray-800">
+                                      <span
+                                        className={
+                                          p.equipo_destacado === "local"
+                                            ? "font-bold"
+                                            : ""
+                                        }
+                                      >
+                                        {p.partido.equipo_local}
+                                      </span>{" "}
+                                      -{" "}
+                                      <span
+                                        className={
+                                          p.equipo_destacado === "visitante"
+                                            ? "font-bold"
+                                            : ""
+                                        }
+                                      >
+                                        {p.partido.equipo_visitante}
+                                      </span>
+                                    </td>
+                                    <td className="px-4 py-2 text-blue-600 font-semibold">
+                                      {p.porcentaje_acierto
+                                        ? `${parseFloat(
+                                            p.porcentaje_acierto
+                                          ).toFixed(1)}%`
+                                        : "-"}
+                                    </td>
+                                    <td className="px-4 py-2 text-gray-800 font-semibold">
+                                      {p.cuota_estim_real}
+                                    </td>
+                                    <td className="px-4 py-2 text-gray-800 font-semibold">
+                                      {p.cuota_casa_apuestas}
+                                    </td>
+                                    <td
+                                      className="px-4 py-2 font-semibold"
+                                      style={{
+                                        color:
+                                          parseFloat(p.valor_estimado) > 0
+                                            ? "#16a34a"
+                                            : parseFloat(p.valor_estimado) < 0
+                                            ? "#dc2626"
+                                            : undefined,
+                                      }}
+                                    >
+                                      {p.valor_estimado
+                                        ? `${
+                                            parseFloat(p.valor_estimado) >= 0
+                                              ? "+"
+                                              : ""
+                                          }${parseFloat(
+                                            p.valor_estimado
+                                          ).toFixed(0)}%`
+                                        : "-"}
+                                    </td>
+                                    <td
+                                      className="px-2 py-2 text-center cursor-pointer text-xl"
+                                      onClick={() => toggleFavorito(f.id)}
+                                    >
+                                      <i
+                                        className="fas fa-star"
+                                        style={{ color: "#facc15" }}
+                                      />
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
                       </div>
-                    </div>
-                  );
-                })}
+                    );
+                  }
+                )}
               </div>
             );
           })
