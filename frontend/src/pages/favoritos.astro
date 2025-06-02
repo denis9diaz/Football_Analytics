@@ -1,0 +1,13 @@
+---
+import Layout from "../layouts/Layout.astro";
+import FavoritosComponent from "../components/Favoritos";
+import "../styles/global.css";
+---
+
+<Layout>
+  <div class="bg-white min-h-screen w-full">
+    <main class="max-w-6xl mx-auto pt-8 px-4 py-10">
+      <FavoritosComponent client:load />
+    </main>
+  </div>
+</Layout>

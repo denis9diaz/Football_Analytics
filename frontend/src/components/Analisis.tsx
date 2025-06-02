@@ -30,6 +30,13 @@ type PartidoAnalizado = {
   equipo_destacado?: "local" | "visitante";
 };
 
+type Favorito = {
+  id: number;
+  partido_analisis: {
+    id: number;
+  };
+};
+
 export default function Analisis() {
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [partidos, setPartidos] = useState<PartidoAnalizado[]>([]);
@@ -39,7 +46,7 @@ export default function Analisis() {
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
   const [ordenCampo, setOrdenCampo] = useState<string | null>(null);
   const [ordenAscendente, setOrdenAscendente] = useState<boolean>(true);
-
+  const [favoritos, setFavoritos] = useState<Favorito[]>([]);
   const [isCargando, setIsCargando] = useState(true);
 
   useEffect(() => {
@@ -47,6 +54,25 @@ export default function Analisis() {
       setIsCargando(false);
       return;
     }
+
+    fetch(`${API_URL}/api/favoritos/`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("access")}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data: Favorito[]) => {
+        if (Array.isArray(data)) {
+          setFavoritos(data);
+        } else {
+          console.error("La respuesta de favoritos no es un array:", data);
+          setFavoritos([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error al cargar favoritos:", err);
+        setFavoritos([]);
+      });
 
     fetch(
       `${API_URL}/api/partidos-analisis/${encodeURIComponent(
@@ -132,6 +158,63 @@ export default function Analisis() {
     } else {
       setOrdenCampo(campo);
       setOrdenAscendente(true);
+    }
+  };
+
+  const esFavorito = (partidoAnalisisId: number) => {
+    return favoritos.find((f) => f.partido_analisis.id === partidoAnalisisId);
+  };
+
+  const toggleFavorito = async (partidoAnalisisId: number) => {
+    const existente = favoritos.find(
+      (f) => f.partido_analisis.id === partidoAnalisisId
+    );
+    try {
+      if (existente) {
+        // Eliminar favorito
+        const res = await fetch(`${API_URL}/api/favoritos/${existente.id}/`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("access")}`,
+          },
+        });
+
+        if (res.ok) {
+          setFavoritos((prev) =>
+            prev.filter((f) => f.partido_analisis.id !== partidoAnalisisId)
+          );
+        } else {
+          const error = await res.text();
+          console.error("Error al eliminar favorito:", error);
+        }
+      } else {
+        // Añadir favorito
+        const res = await fetch(`${API_URL}/api/favoritos/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("access")}`,
+          },
+          body: JSON.stringify({ partido_analisis_id: partidoAnalisisId }),
+        });
+
+        if (res.ok) {
+          const nuevo = await res.json();
+          setFavoritos((prev) => [...prev, nuevo]);
+        } else if (res.status === 400) {
+          const errorText = await res.text();
+          if (errorText.includes("llave duplicada")) {
+            console.warn("El favorito ya existe en la base de datos.");
+          } else {
+            console.error("Error al añadir favorito:", errorText);
+          }
+        } else {
+          const errorText = await res.text();
+          console.error("Error al añadir favorito:", errorText);
+        }
+      }
+    } catch (err) {
+      console.error("Error al alternar favorito:", err);
     }
   };
 
@@ -336,6 +419,9 @@ export default function Analisis() {
                                   </span>
                                 </div>
                               </th>
+                              <th className="px-2 py-2 w-[40px] text-center">
+                                ★
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
@@ -413,6 +499,12 @@ export default function Analisis() {
                                       )}%`
                                     : "-"}
                                 </td>
+                                <td
+                                  className="px-2 py-2 text-center cursor-pointer text-xl"
+                                  onClick={() => toggleFavorito(p.id)}
+                                >
+                                  {esFavorito(p.id) ? "⭐" : "☆"}
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -428,7 +520,9 @@ export default function Analisis() {
               })}
           </>
         ) : (
-          <p className="text-gray-500">Selecciona un método para ver los análisis.</p>
+          <p className="text-gray-500">
+            Selecciona un método para ver los análisis.
+          </p>
         )}
       </div>
     </div>
