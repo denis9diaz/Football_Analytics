@@ -11,7 +11,7 @@ export default function MetodosSidebar({
 }: Props) {
   return (
     <aside
-      className="w-full sm:w-56 md:w-60 lg:w-64 xl:w-72 bg-white/80 border-r border-gray-200 pr-0 sm:pr-4 py-6 flex-shrink-0 relative overflow-x-hidden"
+      className="w-full sm:w-48 md:w-52 lg:w-56 xl:w-60 bg-white/80 border-r border-gray-200 pr-0 sm:pr-4 py-6 flex-shrink-0 relative overflow-x-hidden"
       style={{ minHeight: "100%" }}
     >
       <h2 className="text-xl font-bold mb-6 pl-6 tracking-wide text-blue-600">

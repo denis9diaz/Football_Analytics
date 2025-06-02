@@ -1,59 +1,101 @@
 ---
-import 'animate.css';
-import Footer from './Footer.astro';
+import "animate.css";
+import Footer from "./Footer.astro";
 ---
 
-<section class="relative min-h-[100vh] w-full flex items-center justify-center px-4 py-20 overflow-hidden">
-
-  <div class="relative z-10 max-w-6xl w-full text-center flex flex-col items-center animate__animated animate__fadeIn">
-    <h1 class="text-5xl sm:text-6xl font-bold text-gray-900 mb-8 drop-shadow-lg animate__animated animate__fadeInDown">
-      Tu ventaja en apuestas deportivas: análisis y valor
+<section
+  class="relative min-h-[100vh] w-full flex items-center justify-center px-4 py-20 overflow-hidden"
+>
+  <div
+    class="relative z-10 max-w-6xl w-full text-center flex flex-col items-center animate__animated animate__fadeIn"
+  >
+    <h1
+      class="text-5xl sm:text-6xl font-bold mb-8 drop-shadow-lg animate__animated animate__fadeInDown"
+    >
+      <span class="text-blue-500">
+        Tu ventaja en apuestas deportivas:
+      </span>
+      <br />
+      <span class="text-purple-500">
+        análisis y valor
+      </span>
     </h1>
-    <p class="text-lg sm:text-xl text-gray-700 max-w-2xl mx-auto mb-12 font-medium animate__animated animate__fadeInUp">
-      Análisis profesional, métodos estadísticos rentables y ligas seleccionadas por su fiabilidad. Descubre los partidos con mayor probabilidad y valor
+    <p
+      class="text-lg sm:text-xl text-gray-800 max-w-2xl mx-auto mb-12 font-medium animate__animated animate__fadeInUp"
+    >
+      Análisis profesional, métodos estadísticos rentables y ligas seleccionadas
+      por su fiabilidad. Descubre los partidos con mayor probabilidad y valor
     </p>
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14 w-full animate__animated animate__zoomIn">
+    <div
+      class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 mb-14 w-full animate__animated animate__zoomIn"
+    >
       <!-- Tarjeta 1 -->
-      <div class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-100 hover:scale-105 hover:shadow-xl transition-transform duration-200">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-2">
-          <i class="fa-solid fa-chart-line text-blue-600 text-2xl"></i>
+      <div
+        class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-500 hover:scale-105 hover:shadow-xl transition-transform duration-200"
+      >
+        <div
+          class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-400 mb-2"
+        >
+          <i class="fa-solid fa-chart-line text-white text-2xl"></i>
         </div>
-        <p class="text-gray-800 text-base font-semibold">Probabilidades de cada partido y mercado, analizadas con métodos estadísticos verificados.</p>
+        <p class="text-gray-800 text-base font-semibold">
+          Probabilidades de cada partido y mercado, analizadas con métodos
+          estadísticos verificados.
+        </p>
       </div>
       <!-- Tarjeta 2 -->
-      <div class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-100 hover:scale-105 hover:shadow-xl transition-transform duration-200">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-2">
-          <i class="fa-solid fa-shield-halved text-blue-600 text-2xl"></i>
+      <div
+        class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-500 hover:scale-105 hover:shadow-xl transition-transform duration-200"
+      >
+        <div
+          class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-400 mb-2"
+        >
+          <i class="fa-solid fa-shield-halved text-white text-2xl"></i>
         </div>
-        <p class="text-gray-800 text-base font-semibold">Ligas seleccionadas por su fiabilidad y valor estadístico, para ofrecerte solo lo mejor.</p>
+        <p class="text-gray-800 text-base font-semibold">
+          Ligas seleccionadas por su fiabilidad y valor estadístico.
+        </p>
       </div>
       <!-- Tarjeta 3 -->
-      <div class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-100 hover:scale-105 hover:shadow-xl transition-transform duration-200">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-2">
-          <i class="fa-solid fa-star text-blue-600 text-2xl"></i>
+      <div
+        class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-500 hover:scale-105 hover:shadow-xl transition-transform duration-200"
+      >
+        <div
+          class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-400 mb-2"
+        >
+          <i class="fa-solid fa-star text-white text-2xl"></i>
         </div>
-        <p class="text-gray-800 text-base font-semibold">Ranking de los 5 partidos más probables del día por cada método, para que no pierdas ninguna oportunidad.</p>
+        <p class="text-gray-800 text-base font-semibold">
+          Ranking de los 5 partidos más probables del día por cada método.
+        </p>
       </div>
       <!-- Tarjeta 4 -->
-      <div class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-100 hover:scale-105 hover:shadow-xl transition-transform duration-200">
-        <div class="flex items-center justify-center w-12 h-12 rounded-full bg-blue-50 mb-2">
-          <i class="fa-solid fa-heart text-blue-600 text-2xl"></i>
+      <div
+        class="flex flex-col items-center gap-3 p-6 bg-white/90 rounded-2xl shadow-lg border border-blue-500 hover:scale-105 hover:shadow-xl transition-transform duration-200"
+      >
+        <div
+          class="flex items-center justify-center w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-400 mb-2"
+        >
+          <i class="fa-solid fa-heart text-white text-2xl"></i>
         </div>
-        <p class="text-gray-800 text-base font-semibold">Guarda tus partidos favoritos y toma decisiones con criterio y confianza.</p>
+        <p class="text-gray-800 text-base font-semibold">
+          Guarda tus partidos favoritos y toma decisiones con criterio y
+          confianza.
+        </p>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row justify-center gap-4 animate__animated animate__fadeInUp">
+    <div
+      class="flex flex-col sm:flex-row justify-center gap-4 animate__animated animate__fadeInUp"
+    >
       <a
         href="/analisis"
-        class="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-700 transition text-lg"
+        class="text-white text-lg px-8 py-4 rounded-2xl font-semibold shadow-[0_5px_20px_rgba(0,0,0,0.2)] bg-gradient-to-br from-purple-400 to-blue-500
+         hover:from-blue-500 hover:to-purple-500
+         hover:text-white
+         transition-all duration-300 ease-in-out
+         transform hover:scale-105 active:scale-95 active:shadow-inner"
       >
         Ver análisis
-      </a>
-      <a
-        href="/funcionalidades"
-        class="border border-blue-600 text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-blue-50 transition text-lg"
-      >
-        Ver funcionalidades
       </a>
     </div>
   </div>

@@ -219,7 +219,7 @@ export default function Analisis() {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-8">
+    <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-15">
       <MetodosSidebar
         metodoSeleccionado={metodoSeleccionado}
         onSeleccionar={setMetodoSeleccionado}
@@ -324,7 +324,7 @@ export default function Analisis() {
                           <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                             <tr>
                               <th
-                                className="px-4 py-2 w-[90px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[70px] cursor-pointer select-none"
                                 onClick={handleOrdenFecha}
                               >
                                 <div className="flex items-center gap-1">
@@ -344,12 +344,12 @@ export default function Analisis() {
                                   </span>
                                 </div>
                               </th>
-                              <th className="px-4 py-2 min-w-[200px]">
+                              <th className="px-4 py-2 min-w-[210px]">
                                 Partido
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[115px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[105px] cursor-pointer select-none"
                                 onClick={() =>
                                   handleOrden("porcentaje_acierto")
                                 }
@@ -394,12 +394,12 @@ export default function Analisis() {
                                 </div>
                               </th>
 
-                              <th className="px-4 py-2 w-[105px]">
+                              <th className="px-4 py-2 w-[100px]">
                                 Cuota casa
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[105px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[90px] cursor-pointer select-none"
                                 onClick={() => handleOrden("valor_estimado")}
                               >
                                 <div className="flex items-center gap-1">
@@ -420,7 +420,7 @@ export default function Analisis() {
                                 </div>
                               </th>
                               <th className="px-2 py-2 w-[40px] text-center">
-                                ★
+                                Fav
                               </th>
                             </tr>
                           </thead>

@@ -1,17 +1,22 @@
 <nav
-  class="w-full bg-white/40 shadow-none fixed top-0 left-0 z-50 transition-all backdrop-blur-md"
+  class="w-full bg-gray-800/0 shadow-none fixed top-0 left-0 z-50 transition-all backdrop-blur-md"
   data-api-url={import.meta.env.PUBLIC_API_URL}
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
       <div class="flex items-center flex-shrink-0">
-        <a href="/" class="text-xl font-bold text-blue-600">Fútbol Analytics</a>
+        <a
+          href="/"
+          class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-500 via-blue-500 to-blue-500"
+        >
+          Fútbol Analytics
+        </a>
       </div>
 
       <!-- Botón hamburguesa -->
       <div class="md:hidden">
-        <button id="menu-toggle" class="text-gray-700 focus:outline-none">
+        <button id="menu-toggle" class="text-gray-800 focus:outline-none">
           <i class="fas fa-bars text-2xl"></i>
         </button>
       </div>
@@ -92,22 +97,22 @@
 
   function showUserLinks(username) {
     const links = `
-      <a href="/analisis" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Análisis</a>
-      <a href="/funcionalidades" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Funcionalidades</a>
-      <a href="/planes" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Planes</a>
-      <a href="/favoritos" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Favoritos</a>`;
+      <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Análisis</a>
+      <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
+      <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>
+      <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>`;
 
     centerNav.innerHTML = links;
     mobileCenterNav.innerHTML = links;
 
     const dropdown = `
       <div class="relative inline-block text-left group">
-        <button id="user-menu-button" class="flex items-center space-x-2 text-sm font-semibold text-gray-700 hover:text-blue-600">
+        <button id="user-menu-button" class="flex items-center space-x-2 text-base font-semibold text-blue-500 hover:text-blue-600">
           <i class="fas fa-user"></i>
-          <span id="user-name">${username}</span>
+          <span id="user-name" class="text-base">${username}</span>
           <i class="fas fa-chevron-down"></i>
         </button>
-        <div id="user-dropdown" class="hidden absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10 text-sm left-0 md:right-0">
+        <div id="user-dropdown" class="hidden absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10 text-sm left-0 md:right-0 border border-blue-200">
           <a href="/cuenta" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Mi cuenta</a>
           <div class="border-t border-gray-100"></div>
           <button id="logout-button" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">Cerrar sesión</button>
@@ -123,18 +128,17 @@
 
   function showGuestLinks() {
     const center = `
-      <a href="/analisis" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Análisis</a>
-      <a href="/funcionalidades" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Funcionalidades</a>
-      <a href="/planes" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Planes</a>`;
+      <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Análisis</a>
+      <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
+      <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
 
     const right = `
-      <a href="/login" class="text-sm font-semibold text-gray-700 hover:text-blue-600">Iniciar sesión</a>
+      <a href="/login" class="text-base font-semibold text-gray-800 hover:text-blue-500">Iniciar sesión</a>
       <a
         href="/registro"
-        class="text-sm font-semibold px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+        class="text-base font-semibold px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
       >
         Registrarse
-      </a>
       </a>`;
 
     centerNav.innerHTML = center;
@@ -165,7 +169,6 @@
     });
   }
 
-  // Escuchar el evento personalizado para actualizar el nombre de usuario dinámicamente
   window.addEventListener("usernameUpdated", (event) => {
     const newUsername = event.detail.username;
     const userNameSpan = document.querySelector("#user-name");

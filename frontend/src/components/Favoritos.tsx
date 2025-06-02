@@ -85,7 +85,7 @@ export default function Favoritos() {
   }, {} as Record<string, Favorito[]>);
 
   return (
-    <div className="bg-white min-h-screen w-full">
+    <div className="bg-white min-h-screen w-full pt-5">
       <main className="max-w-6xl mx-auto pt-8 px-4 py-10">
         <div className="flex justify-end mb-6">
           <div className="relative flex items-center gap-1 sm:gap-2">
