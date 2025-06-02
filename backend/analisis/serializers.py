@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Liga, Partido, PartidoAnalisis
+from .models import Liga, Partido, PartidoAnalisis, Favorito
 
 class LigaSerializer(serializers.ModelSerializer):
     class Meta:
@@ -40,3 +40,13 @@ class PartidoAnalisisSerializer(serializers.ModelSerializer):
             'porcentaje_acierto',
             'equipo_destacado',
         ]
+
+class FavoritoSerializer(serializers.ModelSerializer):
+    partido_analisis = PartidoAnalisisSerializer(read_only=True)
+    partido_analisis_id = serializers.PrimaryKeyRelatedField(
+        queryset=PartidoAnalisis.objects.all(), source='partido_analisis', write_only=True
+    )
+
+    class Meta:
+        model = Favorito
+        fields = ['id', 'partido_analisis', 'partido_analisis_id']

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # ========================
 # 1. LIGAS Y EQUIPOS
@@ -145,3 +146,15 @@ class RachaEquipo(models.Model):
 
     def __str__(self):
         return f"{self.equipo} - {self.condicion} ({self.tipo})"
+
+
+class Favorito(models.Model):
+    usuario = models.ForeignKey(User, on_delete=models.CASCADE)
+    partido_analisis = models.ForeignKey(PartidoAnalisis, on_delete=models.CASCADE, related_name="favoritos")
+    fecha_guardado = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('usuario', 'partido_analisis')
+
+    def __str__(self):
+        return f"{self.usuario.username} - {self.partido_analisis} ({self.metodo})"
