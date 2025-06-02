@@ -97,7 +97,7 @@ class SendTempPasswordView(APIView):
         user.save()
 
         # Enlace a la página de cambio
-        enlace_cambio = f"{settings.FRONTEND_URL}/cambiar-temporal"
+        enlace_cambio = f"{settings.FRONTEND_URL}/cambiar-contraseña"
 
         # Contenido del correo
         subject = "Recuperación de contraseña"
