@@ -6,4 +6,5 @@ urlpatterns = [
     path('', lambda request: redirect('admin/')),
     path('admin/', admin.site.urls),
     path('api/', include('analisis.urls')),
+    path('api/auth/', include('customauth.urls')),
 ]
