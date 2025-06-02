@@ -1,7 +1,9 @@
-<nav class="w-full bg-white/40 shadow-none fixed top-0 left-0 z-50 transition-all">
+<nav
+  class="w-full bg-white/40 shadow-none fixed top-0 left-0 z-50 transition-all backdrop-blur-md"
+  data-api-url={import.meta.env.PUBLIC_API_URL}
+>
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
-      
       <!-- Logo -->
       <div class="flex items-center flex-shrink-0">
         <a href="/" class="text-xl font-bold text-blue-600">Fútbol Analytics</a>
@@ -14,41 +16,21 @@
         </button>
       </div>
 
-      <!-- Menú enlaces (desktop) -->
-      <div id="menu" class="hidden md:flex md:items-center md:space-x-6 w-full md:w-auto md:flex-1 md:justify-center mt-4 md:mt-0">
-        <a href="/funcionalidades" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">
-          Funcionalidades
-        </a>
-        <a href="/planes" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">
-          Planes
-        </a>
+      <!-- Centro: enlaces -->
+      <div
+        id="nav-center"
+        class="hidden md:flex md:items-center md:space-x-6 w-full md:w-auto md:flex-1 md:justify-center mt-4 md:mt-0"
+      >
       </div>
 
-      <!-- Botones de acción -->
-      <div class="hidden md:flex items-center space-x-4">
-        <a href="/login" class="text-sm font-semibold text-gray-700 hover:text-blue-600">
-          Iniciar sesión
-        </a>
-        <a href="/registro" class="text-sm font-semibold text-white bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 transition">
-          Registrarse
-        </a>
-      </div>
+      <!-- Derecha: usuario -->
+      <div id="nav-right" class="hidden md:flex items-center space-x-4"></div>
     </div>
 
-    <!-- Menú colapsado (móvil) -->
-    <div id="mobile-menu" class="md:hidden hidden mt-4 space-y-4 pb-4">
-      <a href="/funcionalidades" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">
-        Funcionalidades
-      </a>
-      <a href="/planes" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">
-        Planes
-      </a>
-      <a href="/login" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">
-        Iniciar sesión
-      </a>
-      <a href="/registro" class="block text-sm font-semibold text-white bg-blue-600 px-3 py-1 rounded hover:bg-blue-700 transition w-fit">
-        Registrarse
-      </a>
+    <!-- Menú móvil -->
+    <div id="mobile-menu" class="md:hidden hidden mt-4 space-y-4 pb-4 px-2">
+      <div id="mobile-nav-center"></div>
+      <div id="mobile-nav-right"></div>
     </div>
   </div>
 </nav>
@@ -56,21 +38,144 @@
 <!-- Espaciador -->
 <div class="h-8"></div>
 
-<!-- Script seguro -->
-<script>
-  document.addEventListener("DOMContentLoaded", () => {
-    const menuToggle = document.getElementById("menu-toggle");
-    const mobileMenu = document.getElementById("mobile-menu");
+<script is:inline>
+  const centerNav = document.getElementById("nav-center");
+  const rightNav = document.getElementById("nav-right");
+  const mobileCenterNav = document.getElementById("mobile-nav-center");
+  const mobileRightNav = document.getElementById("mobile-nav-right");
+  const mobileMenu = document.getElementById("mobile-menu");
+  const menuToggle = document.getElementById("menu-toggle");
 
-    if (menuToggle && mobileMenu) {
-      menuToggle.addEventListener("click", () => {
-        mobileMenu.classList.toggle("hidden");
+  const clearSession = () => {
+    localStorage.removeItem("access");
+    localStorage.removeItem("refresh");
+    localStorage.removeItem("username");
+  };
+
+  menuToggle?.addEventListener("click", () => {
+    mobileMenu.classList.toggle("hidden");
+  });
+
+  const username = localStorage.getItem("username");
+  const access = localStorage.getItem("access");
+
+  async function checkToken() {
+    const API_URL = document
+      .querySelector("nav[data-api-url]")
+      ?.getAttribute("data-api-url");
+
+    if (!access || !API_URL) {
+      clearSession();
+      showGuestLinks();
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_URL}/api/auth/validate-token/`, {
+        headers: {
+          Authorization: `Bearer ${access}`,
+        },
       });
+
+      if (res.ok) {
+        showUserLinks(localStorage.getItem("username"));
+      } else {
+        clearSession();
+        showGuestLinks();
+      }
+    } catch (err) {
+      console.error("Error al validar el token:", err);
+      clearSession();
+      showGuestLinks();
+    }
+  }
+
+  function showUserLinks(username) {
+    const links = `
+      <a href="/analisis" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Análisis</a>
+      <a href="/funcionalidades" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Funcionalidades</a>
+      <a href="/planes" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Planes</a>`;
+
+    centerNav.innerHTML = links;
+    mobileCenterNav.innerHTML = links;
+
+    const dropdown = `
+      <div class="relative inline-block text-left group">
+        <button id="user-menu-button" class="flex items-center space-x-2 text-sm font-semibold text-gray-700 hover:text-blue-600">
+          <i class="fas fa-user"></i>
+          <span id="user-name">${username}</span>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+        <div id="user-dropdown" class="hidden absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10 text-sm left-0 md:right-0">
+          <a href="/cuenta" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Mi cuenta</a>
+          <div class="border-t border-gray-100"></div>
+          <button id="logout-button" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">Cerrar sesión</button>
+        </div>
+      </div>`;
+
+    rightNav.innerHTML = dropdown;
+    mobileRightNav.innerHTML = dropdown;
+
+    bindDropdownEvents(document);
+    bindDropdownEvents(mobileMenu);
+  }
+
+  function showGuestLinks() {
+    const center = `
+      <a href="/analisis" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Análisis</a>
+      <a href="/funcionalidades" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Funcionalidades</a>
+      <a href="/planes" class="block text-sm font-semibold text-gray-700 hover:text-blue-600">Planes</a>`;
+
+    const right = `
+      <a href="/login" class="text-sm font-semibold text-gray-700 hover:text-blue-600">Iniciar sesión</a>
+      <a
+        href="/registro"
+        class="text-sm font-semibold px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition"
+      >
+        Registrarse
+      </a>
+      </a>`;
+
+    centerNav.innerHTML = center;
+    mobileCenterNav.innerHTML = center;
+    rightNav.innerHTML = right;
+    mobileRightNav.innerHTML = right;
+  }
+
+  function bindDropdownEvents(scope) {
+    const btn = scope.querySelector("#user-menu-button");
+    const dropdown = scope.querySelector("#user-dropdown");
+    const logout = scope.querySelector("#logout-button");
+
+    btn?.addEventListener("click", (e) => {
+      e.stopPropagation();
+      dropdown?.classList.toggle("hidden");
+    });
+
+    logout?.addEventListener("click", () => {
+      clearSession();
+      window.location.href = "/";
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!scope.contains(e.target)) {
+        dropdown?.classList.add("hidden");
+      }
+    });
+  }
+
+  // Escuchar el evento personalizado para actualizar el nombre de usuario dinámicamente
+  window.addEventListener("usernameUpdated", (event) => {
+    const newUsername = event.detail.username;
+    const userNameSpan = document.querySelector("#user-name");
+    if (userNameSpan) {
+      userNameSpan.textContent = newUsername;
     }
   });
+
+  checkToken();
 </script>
 
-<!-- Font Awesome -->
 <link
   rel="stylesheet"
   href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"

@@ -1,0 +1,72 @@
+---
+import Layout from '../layouts/Layout.astro';
+import '../styles/global.css';
+import 'animate.css';
+---
+
+<Layout>
+  <div id="toast-message" class="hidden fixed top-6 left-1/2 transform -translate-x-1/2 bg-blue-600 text-white px-6 py-3 rounded shadow-lg z-50 transition-all duration-300"></div>
+
+  <section class="max-w-5xl mx-auto px-4 py-16 text-center mt-8 animate__animated animate__fadeIn" style="animation-duration: 0.8s;">
+    <div class="max-w-md mx-auto bg-gradient-to-br from-blue-50 to-white border border-blue-200 rounded-2xl shadow-md p-8">
+      <h2 class="text-2xl font-bold text-blue-600 mb-8">Cambiar contraseña temporal</h2>
+      <form class="space-y-6 text-left" onsubmit="handleTempPasswordChange(event)">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Contraseña temporal</label>
+          <input type="password" name="temp_password" required class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-600 focus:border-blue-600" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Nueva contraseña</label>
+          <input type="password" name="new_password" required class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-600 focus:border-blue-600" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Repite la nueva contraseña</label>
+          <input type="password" name="confirm_password" required class="w-full px-4 py-2 border border-gray-300 rounded-md bg-white focus:ring-blue-600 focus:border-blue-600" />
+        </div>
+        <button type="submit" class="w-full bg-blue-600 text-white px-6 py-2 rounded font-semibold hover:bg-blue-700 transition">Cambiar contraseña</button>
+      </form>
+    </div>
+  </section>
+
+  <script is:inline>
+    async function handleTempPasswordChange(e) {
+      e.preventDefault();
+      const form = e.target;
+      const temp_password = form.temp_password.value;
+      const new_password = form.new_password.value;
+      const confirm_password = form.confirm_password.value;
+
+      if (new_password !== confirm_password) {
+        showToast("Las nuevas contraseñas no coinciden");
+        return;
+      }
+
+      try {
+        const res = await fetch("http://localhost:8000/api/auth/force_change_password/", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ temp_password, new_password }),
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          showToast(data.detail || "Error al cambiar la contraseña");
+          return;
+        }
+
+        showToast("Contraseña actualizada correctamente");
+        setTimeout(() => (window.location.href = "/login"), 2500);
+      } catch (error) {
+        showToast("Error de conexión con el servidor");
+      }
+    }
+
+    function showToast(message) {
+      const toast = document.getElementById("toast-message");
+      toast.textContent = message;
+      toast.classList.remove("hidden");
+      setTimeout(() => toast.classList.add("hidden"), 4000);
+    }
+  </script>
+</Layout>
