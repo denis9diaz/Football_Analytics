@@ -5,6 +5,7 @@ import "animate.css";
 
 const uid = Astro.url.searchParams.get("uid");
 const token = Astro.url.searchParams.get("token");
+const API_URL = import.meta.env.PUBLIC_API_URL;
 ---
 
 <Layout>
@@ -48,15 +49,24 @@ const token = Astro.url.searchParams.get("token");
     const params = new URLSearchParams(window.location.search);
     const uid = params.get("uid");
     const token = params.get("token");
-    const API_URL = import.meta.env.PUBLIC_API_URL;
+
+    const API_URL = "http://localhost:8000"; // ← fijado directamente
+
+    console.log(
+      "🔎 URL completa:",
+      `${API_URL}/api/auth/activate/?uid=${uid}&token=${token}`
+    );
 
     if (uid && token) {
       fetch(`${API_URL}/api/auth/activate/?uid=${uid}&token=${token}`)
         .then((res) =>
-          res.json().then((data) => ({ status: res.status, body: data }))
+          res.json().then((data) => ({
+            status: res.status,
+            detail: data.detail || data.error || "",
+          }))
         )
-        .then(({ status }) => {
-          if (status === 200) {
+        .then(({ status, detail }) => {
+          if (status === 200 && detail === "Cuenta activada") {
             document
               .getElementById("activation-box")
               .classList.remove("hidden");
