@@ -1,0 +1,23 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+  <div style="text-align: center;">
+    <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1748962059/logo_q16sbd.png" alt="Fútbol Analytics" style="height: 60px; margin-bottom: 20px;" />
+  </div>
+
+  <h2 style="color: #2B7FFF;">¡Tu cuenta ha sido activada, {{ username }}!</h2>
+
+  <p style="font-size: 16px; color: #333;">
+    Bienvenido a <strong>Fútbol Analytics</strong>. Ya puedes acceder a nuestros análisis y estadísticas exclusivas.
+  </p>
+
+  <p style="font-size: 16px; color: #333;">
+    Estamos encantados de tenerte con nosotros. ¡Aprovecha al máximo todas las funcionalidades!
+  </p>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <a href="{{ settings.FRONTEND_URL }}/analisis" style="display: inline-block; padding: 12px 24px; background-color: #2B7FFF; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+      Ir al panel de análisis
+    </a>
+  </div>
+{% endblock %}

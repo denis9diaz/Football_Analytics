@@ -1,0 +1,31 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+  <div style="text-align: center;">
+    <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1748962059/logo_q16sbd.png" alt="Fútbol Analytics" style="height: 60px; margin-bottom: 20px;" />
+  </div>
+
+  <h2 style="color: #2B7FFF;">Recuperación de contraseña</h2>
+
+  <p style="font-size: 16px; color: #333;">
+    Hola <strong>{{ username }}</strong>,
+  </p>
+
+  <p style="font-size: 16px; color: #333;">
+    Tu nueva contraseña temporal es:
+  </p>
+
+  <p style="font-size: 20px; font-weight: bold; color: #000; text-align: center; margin: 20px 0;">
+    {{ temp_password }}
+  </p>
+
+  <p style="font-size: 16px; color: #333;">
+    Por seguridad, debes cambiarla cuanto antes.
+  </p>
+
+  <div style="text-align: center; margin-top: 30px;">
+    <a href="{{ enlace_cambio }}" style="display: inline-block; padding: 12px 24px; background-color: #2B7FFF; color: white; text-decoration: none; border-radius: 6px; font-weight: bold;">
+      Cambiar contraseña
+    </a>
+  </div>
+{% endblock %}

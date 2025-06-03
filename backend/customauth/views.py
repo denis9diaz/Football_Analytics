@@ -14,6 +14,9 @@ import string
 from django.contrib.auth import authenticate
 from django.contrib.auth.hashers import check_password
 from rest_framework.permissions import AllowAny
+from django.template.loader import render_to_string
+from django.utils import timezone
+from django.core.mail import EmailMultiAlternatives
 
 
 class RegisterView(generics.CreateAPIView):
@@ -31,20 +34,26 @@ class RegisterView(generics.CreateAPIView):
         activation_link = f"{settings.FRONTEND_URL}/verificar?uid={uid}&token={token}"
 
         subject = 'Activa tu cuenta'
-        message = f"Hola {user.username},\n\nHaz clic en el siguiente enlace para activar tu cuenta:\n{activation_link}"
         from_email = settings.DEFAULT_FROM_EMAIL
         recipient_list = [user.email]
 
-        try:
-            send_mail(subject, message, from_email, recipient_list)
-        except Exception as e:
-            print("❌ Error al enviar el correo:", e)
+        # Renderizar contenido HTML y texto plano
+        html_content = render_to_string('email/activar.html', {
+            'username': user.username,
+            'activation_link': activation_link,
+            'subject': subject,
+            'year': timezone.now().year,
+        })
+        text_content = f"Hola {user.username},\nActiva tu cuenta aquí: {activation_link}"
+
+        msg = EmailMultiAlternatives(subject, text_content, from_email, recipient_list)
+        msg.attach_alternative(html_content, "text/html")
+        msg.send()
 
         return Response(
-            {"detail": "Usuario creado. Revisa tu correo para activar la cuenta."},
-            status=status.HTTP_201_CREATED
-        )
-
+    {"detail": "Usuario creado. Revisa tu correo para activar la cuenta."},
+    status=status.HTTP_201_CREATED
+)
 
 class ActivateUserView(APIView):
     def get(self, request):
@@ -60,13 +69,21 @@ class ActivateUserView(APIView):
             user.is_active = True
             user.save()
 
-            # Enviar correo de bienvenida
-            send_mail(
-                subject="¡Bienvenido!",
-                message=f"Hola {user.username}, tu cuenta ha sido activada correctamente.",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[user.email],
-            )
+            # Enviar correo de bienvenida con plantilla
+            subject = "¡Bienvenido!"
+            from_email = settings.DEFAULT_FROM_EMAIL
+            to = [user.email]
+
+            html_content = render_to_string("email/bienvenida.html", {
+                "username": user.username,
+                "subject": subject,
+                "year": timezone.now().year,
+            })
+            text_content = f"Hola {user.username}, tu cuenta ha sido activada correctamente."
+
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
 
             return Response({'detail': 'Cuenta activada'}, status=200)
         else:
@@ -104,22 +121,19 @@ class SendTempPasswordView(APIView):
         from_email = settings.DEFAULT_FROM_EMAIL
         to = [email]
 
+        html_content = render_to_string("email/recuperar.html", {
+            "username": user.username,
+            "temp_password": temp_password,
+            "enlace_cambio": enlace_cambio,
+            "subject": subject,
+            "year": timezone.now().year,
+        })
+
         text_content = (
             f"Hola {user.username},\n\n"
             f"Tu nueva contraseña temporal es: {temp_password}\n\n"
             f"Debes cambiarla cuanto antes. Hazlo aquí: {enlace_cambio}"
         )
-
-        html_content = f"""
-            <p>Hola <strong>{user.username}</strong>,</p>
-            <p>Tu nueva contraseña temporal es:</p>
-            <p style="font-size: 18px; font-weight: bold;">{temp_password}</p>
-            <p>Por seguridad, debes cambiarla cuanto antes.</p>
-            <p>
-                Haz clic en el siguiente enlace para establecer una nueva contraseña:<br>
-                <a href="{enlace_cambio}" style="color: #1d4ed8;">{enlace_cambio}</a>
-            </p>
-        """
 
         msg = EmailMultiAlternatives(subject, text_content, from_email, to)
         msg.attach_alternative(html_content, "text/html")
@@ -146,4 +160,3 @@ class ForceChangePasswordView(APIView):
                 return Response({'detail': 'Contraseña actualizada correctamente'}, status=200)
 
         return Response({'detail': 'Contraseña temporal incorrecta'}, status=400)
-
