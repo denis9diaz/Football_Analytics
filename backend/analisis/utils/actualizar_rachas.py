@@ -16,24 +16,26 @@ def actualizar_rachas():
     for equipo in Equipo.objects.all():
         for condicion, func in CONDICIONES.items():
             for contexto in CONTEXTOS:
+                # Filtrar partidos según el contexto
                 partidos = Partido.objects.filter(
                     Q(equipo_local=equipo) | Q(equipo_visitante=equipo),
                     fecha__lt=now(),
                     goles_local_ft__isnull=False,
                     goles_visitante_ft__isnull=False
-                ).order_by('-fecha')
+                ).order_by('fecha')
 
                 if contexto == 'local':
                     partidos = partidos.filter(equipo_local=equipo)
                 elif contexto == 'visitante':
                     partidos = partidos.filter(equipo_visitante=equipo)
 
-                # Racha actual = partidos seguidos SIN que se cumpla la condición
+                # Calcular racha actual
                 racha_actual = 0
                 for p in partidos:
                     if func(p, equipo):
-                        break
-                    racha_actual += 1
+                        racha_actual = 0
+                    else:
+                        racha_actual += 1
 
                 RachaEquipo.objects.update_or_create(
                     equipo=equipo,
@@ -43,7 +45,7 @@ def actualizar_rachas():
                     defaults={'cantidad': racha_actual}
                 )
 
-                # Racha histórica = máxima racha seguida SIN cumplirse
+                # Calcular racha histórica
                 racha_max = 0
                 racha_temp = 0
                 for p in partidos:
@@ -60,3 +62,5 @@ def actualizar_rachas():
                     tipo='historica',
                     defaults={'cantidad': racha_max}
                 )
+from analisis.utils.actualizar_rachas import actualizar_rachas
+actualizar_rachas()
