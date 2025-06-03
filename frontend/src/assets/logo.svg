@@ -1,0 +1,31 @@
+<svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Definición de degradados -->
+  <defs>
+    <linearGradient id="gradAzul" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2B7FFF"/>
+      <stop offset="100%" stop-color="#1A5EDB"/>
+    </linearGradient>
+    <linearGradient id="gradMorado" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#AD46FF"/>
+      <stop offset="100%" stop-color="#7A2ED3"/>
+    </linearGradient>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="120%" >
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#000000" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Círculo externo balón con sombra -->
+  <circle cx="40" cy="40" r="30" stroke="url(#gradAzul)" stroke-width="3" fill="none" filter="url(#shadow)"/>
+  
+  <!-- Línea vertical del balón -->
+  <line x1="40" y1="10" x2="40" y2="70" stroke="url(#gradAzul)" stroke-width="1.5"/>
+
+  <!-- Barras estadísticas centradas -->
+  <rect x="31" y="52" width="6" height="12" fill="url(#gradMorado)" rx="2" filter="url(#shadow)"/>
+  <rect x="39" y="42" width="6" height="22" fill="url(#gradMorado)" rx="2" filter="url(#shadow)"/>
+  <rect x="47" y="34" width="6" height="30" fill="url(#gradMorado)" rx="2" filter="url(#shadow)"/>
+
+  <!-- Texto -->
+  <text x="80" y="34" font-family="Montserrat, sans-serif" font-weight="600" font-size="26" fill="url(#gradAzul)">Fútbol</text>
+  <text x="80" y="66" font-family="Montserrat, sans-serif" font-weight="600" font-size="26" fill="url(#gradMorado)">Analytics</text>
+</svg>
