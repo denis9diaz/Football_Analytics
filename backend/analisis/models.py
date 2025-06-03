@@ -68,13 +68,8 @@ class Partido(models.Model):
 
         super().save(*args, **kwargs)
 
-        # Actualizar rachas
-        from analisis.utils.actualizar_rachas import actualizar_rachas
-        actualizar_rachas()
+        # Actualizar rachas incrementalmente SOLO para este partido
 
-        # =====================
-        # GOL HT
-        # =====================
         if self.gol_ht is not None:
             for equipo, contexto in [
                 (self.equipo_local, 'local'),
@@ -84,9 +79,6 @@ class Partido(models.Model):
             ]:
                 self._actualizar_racha_equipo(equipo, contexto, self.gol_ht, 'gol_ht')
 
-        # =====================
-        # TTS
-        # =====================
         if self.goles_local_ft is not None and self.goles_visitante_ft is not None:
             for equipo, goles, contextos in [
                 (self.equipo_local, self.goles_local_ft, ['local', 'ambos']),
@@ -95,9 +87,6 @@ class Partido(models.Model):
                 for contexto in contextos:
                     self._actualizar_racha_equipo(equipo, contexto, goles > 0, 'tts')
 
-        # =====================
-        # BTTS
-        # =====================
         if self.btts is not None:
             for equipo, contextos in [
                 (self.equipo_local, ['local', 'ambos']),
@@ -106,9 +95,6 @@ class Partido(models.Model):
                 for contexto in contextos:
                     self._actualizar_racha_equipo(equipo, contexto, self.btts, 'btts')
 
-        # =====================
-        # HOME TO WIN
-        # =====================
         if self.goles_local_ft is not None and self.goles_visitante_ft is not None:
             gano_local = self.goles_local_ft > self.goles_visitante_ft
             for equipo, cumplido, contextos in [
@@ -118,37 +104,26 @@ class Partido(models.Model):
                 for contexto in contextos:
                     self._actualizar_racha_equipo(equipo, contexto, cumplido, 'ganar')
 
-        # =====================
-        # OVER 1.5 HOME
-        # =====================
         if self.goles_local_ft is not None:
             cumple_local = self.goles_local_ft >= 2
             for contexto in ['local', 'ambos']:
                 self._actualizar_racha_equipo(self.equipo_local, contexto, cumple_local, 'over_1_5_marcados')
 
-            cumple_visitante = self.goles_local_ft >= 2
+            cumple_visitante = self.goles_visitante_ft >= 2
             for contexto in ['visitante', 'ambos']:
                 self._actualizar_racha_equipo(self.equipo_visitante, contexto, cumple_visitante, 'over_1_5_recibidos')
 
-        # =====================
-        # OVER 1.5 y OVER 2.5
-        # =====================
-        for condicion in [('over_1_5', self.over_1_5), ('over_2_5', self.over_2_5)]:
-            if condicion[1] is not None:
+        for condicion, valor in [('over_1_5', self.over_1_5), ('over_2_5', self.over_2_5)]:
+            if valor is not None:
                 for equipo, contexto in [
                     (self.equipo_local, 'ambos'),
                     (self.equipo_visitante, 'ambos')
                 ]:
-                    self._actualizar_racha_equipo(equipo, contexto, condicion[1], condicion[0])
+                    self._actualizar_racha_equipo(equipo, contexto, valor, condicion)
 
     def _actualizar_racha_equipo(self, equipo, contexto, cumplido, condicion):
         if equipo is None:
             return
-
-        # Obtener todos los partidos del equipo en orden cronológico
-        partidos = Partido.objects.filter(
-            models.Q(equipo_local=equipo) | models.Q(equipo_visitante=equipo)
-        ).order_by('fecha')
 
         racha_actual, _ = RachaEquipo.objects.get_or_create(
             equipo=equipo,
@@ -158,6 +133,10 @@ class Partido(models.Model):
             defaults={'cantidad': 0}
         )
 
+        # Incrementa si no se cumplió la condición, reinicia a 0 si se cumplió
+        racha_actual.cantidad = 0 if cumplido else racha_actual.cantidad + 1
+        racha_actual.save()
+
         racha_historica, _ = RachaEquipo.objects.get_or_create(
             equipo=equipo,
             condicion=condicion,
@@ -166,23 +145,10 @@ class Partido(models.Model):
             defaults={'cantidad': 0}
         )
 
-        # Recalcular la racha actual en orden cronológico
-        cantidad_actual = 0
-        for partido in partidos:
-            if partido.fecha <= self.fecha:  # Solo considerar partidos anteriores o el actual
-                if cumplido:
-                    cantidad_actual = 0
-                else:
-                    cantidad_actual += 1
-
-        racha_actual.cantidad = cantidad_actual
-        racha_actual.save()
-
-        # Actualizar la racha histórica si la actual es más larga
+        # Actualiza la histórica solo si la actual la supera
         if racha_actual.cantidad > racha_historica.cantidad:
             racha_historica.cantidad = racha_actual.cantidad
             racha_historica.save()
-
 
 # ========================
 # 3. MÉTODOS FIJOS
