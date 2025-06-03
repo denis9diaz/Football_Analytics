@@ -19,9 +19,9 @@ export default function MetodosSidebar({
       </h2>
       <ul className="space-y-1">
         {[
+          "Over 0.5 HT",
           "TTS",
           "BTTS",
-          "Over 0.5 HT",
           "Over 1.5",
           "Over 2.5",
           "Over 1.5 Home",

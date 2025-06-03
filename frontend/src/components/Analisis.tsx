@@ -41,7 +41,7 @@ export default function Analisis() {
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [partidos, setPartidos] = useState<PartidoAnalizado[]>([]);
   const [ligaFiltrada, setLigaFiltrada] = useState<number | null>(null);
-  const [metodoSeleccionado, setMetodoSeleccionado] = useState<string>("TTS");
+  const [metodoSeleccionado, setMetodoSeleccionado] = useState<string>("Over 0.5 HT");
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
   const [ordenCampo, setOrdenCampo] = useState<string | null>(null);
@@ -373,7 +373,7 @@ export default function Analisis() {
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[105px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[110px] cursor-pointer select-none"
                                 onClick={() => handleOrden("cuota_estim_real")}
                               >
                                 <div className="flex items-center gap-1">
@@ -394,12 +394,12 @@ export default function Analisis() {
                                 </div>
                               </th>
 
-                              <th className="px-4 py-2 w-[100px]">
+                              <th className="px-4 py-2 w-[105px]">
                                 Cuota casa
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[90px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[95px] cursor-pointer select-none"
                                 onClick={() => handleOrden("valor_estimado")}
                               >
                                 <div className="flex items-center gap-1">
