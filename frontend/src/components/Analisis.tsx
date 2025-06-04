@@ -258,8 +258,8 @@ export default function Analisis() {
               En Fútbol Analytics recomendamos{" "}
               <strong>no apostar a cuotas inferiores a 1.60</strong>.<br />
               Si la cuota es más baja, es preferible{" "}
-              <strong>esperar al directo (LIVE)</strong> y entrar solo si alcanza
-              el valor mínimo indicado.
+              <strong>esperar al directo (LIVE)</strong> y entrar solo si
+              alcanza el valor mínimo indicado.
             </p>
           </div>
         )}
@@ -356,7 +356,7 @@ export default function Analisis() {
                     </div>
 
                     {partidosLiga.length > 0 ? (
-                      <div className="overflow-x-auto border border-gray-200 rounded-b">
+                      <div className="overflow-x-auto border border-gray-200 rounded-b bg-[#fefefe]">
                         <table className="min-w-[650px] w-full text-sm text-left table-fixed">
                           <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                             <tr>
@@ -465,7 +465,7 @@ export default function Analisis() {
                             {partidosLiga.map((p) => (
                               <tr
                                 key={p.id}
-                                className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+                                className="hover:bg-gray-100 border-b border-gray-200 last:border-b-0"
                               >
                                 <td className="px-4 py-2 text-gray-700">
                                   {format(
