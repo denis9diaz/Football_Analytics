@@ -103,7 +103,7 @@ export default function LosMejores() {
             <div className="relative bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md mb-6">
               <button
                 onClick={cerrarAviso}
-                className="absolute top-2 right-3 text-yellow-800 hover:text-yellow-600 text-lg"
+                className="absolute top-2 right-3 text-yellow-800 cursor-pointer hover:text-yellow-600 text-2xl"
               >
                 ×
               </button>
