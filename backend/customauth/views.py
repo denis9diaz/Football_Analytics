@@ -160,3 +160,37 @@ class ForceChangePasswordView(APIView):
                 return Response({'detail': 'Contraseña actualizada correctamente'}, status=200)
 
         return Response({'detail': 'Contraseña temporal incorrecta'}, status=400)
+
+
+class ContactView(APIView):
+    permission_classes = [AllowAny]
+
+    def post(self, request):
+        name = request.data.get("name")
+        email = request.data.get("email")
+        message = request.data.get("message")
+
+        if not name or not email or not message:
+            return Response({"detail": "Todos los campos son obligatorios."}, status=400)
+
+        subject = f"📩 Nuevo mensaje de contacto - {name}"
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to = [settings.CONTACT_EMAIL]
+
+        html_content = render_to_string("email/contacto.html", {
+            "name": name,
+            "email": email,
+            "message": message,
+            "subject": subject,
+            "year": timezone.now().year,
+        })
+
+        text_content = f"De: {name} <{email}>\n\nMensaje:\n{message}"
+
+        try:
+            msg = EmailMultiAlternatives(subject, text_content, from_email, to)
+            msg.attach_alternative(html_content, "text/html")
+            msg.send()
+            return Response({"detail": "Mensaje enviado correctamente."}, status=200)
+        except Exception as e:
+            return Response({"detail": "Error al enviar el mensaje."}, status=500)

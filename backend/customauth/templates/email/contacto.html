@@ -1,0 +1,25 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+  <div style="text-align: center;">
+    <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1748962059/logo_q16sbd.png" alt="Fútbol Analytics" style="height: 60px; margin-bottom: 20px;" />
+  </div>
+
+  <h2 style="color: #2B7FFF;">📩 Nuevo mensaje de contacto</h2>
+
+  <p style="font-size: 16px; color: #333;">
+    Has recibido un nuevo mensaje desde el formulario de contacto de <strong>Fútbol Analytics</strong>.
+  </p>
+
+  <p style="font-size: 16px; color: #333;"><strong>Nombre:</strong> {{ name }}</p>
+  <p style="font-size: 16px; color: #333;"><strong>Email:</strong> {{ email }}</p>
+
+  <p style="font-size: 16px; color: #333; margin-top: 20px;"><strong>Mensaje:</strong></p>
+  <p style="font-size: 15px; color: #444; white-space: pre-wrap; line-height: 1.6;">
+    {{ message }}
+  </p>
+
+  <p style="font-size: 13px; color: #888; margin-top: 40px;">
+    Este mensaje fue enviado el {{ year }} desde el sitio web oficial.
+  </p>
+{% endblock %}
