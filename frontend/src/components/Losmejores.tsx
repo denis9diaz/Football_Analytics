@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import MetodosSidebar from "./MetodosSidebar";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
+import "animate.css";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -153,7 +154,8 @@ export default function LosMejores() {
                     key={p.id}
                     className={`p-4 rounded-md shadow-md border ${getRankingStyle(
                       ranking
-                    )}`}
+                    )} animate__animated animate__fadeInUp`}
+                    style={{ animationDelay: `${index * 0.4}s` }}
                   >
                     <div className="flex items-center gap-3">
                       <div className="text-3xl font-bold">
