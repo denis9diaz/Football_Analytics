@@ -35,6 +35,22 @@ export default function LosMejores() {
   >({});
   const [metodoSeleccionado, setMetodoSeleccionado] = useState<string>("");
   const [isCargando, setIsCargando] = useState(true);
+  const [mostrarAviso, setMostrarAviso] = useState(false);
+
+  useEffect(() => {
+    const ocultadoHasta = localStorage.getItem("avisoCuotasRankingOcultoHasta");
+    if (!ocultadoHasta || new Date() > new Date(ocultadoHasta)) {
+      setMostrarAviso(true);
+    }
+  }, []);
+
+  const cerrarAviso = () => {
+    setMostrarAviso(false);
+    const mañana = new Date();
+    mañana.setDate(mañana.getDate() + 1);
+    mañana.setHours(0, 0, 0, 0);
+    localStorage.setItem("avisoCuotasRankingOcultoHasta", mañana.toISOString());
+  };
 
   useEffect(() => {
     fetch(`${API_URL}/api/ranking-partidos-analizados/`, {
@@ -83,6 +99,25 @@ export default function LosMejores() {
         </div>
 
         <div className="flex-1">
+          {mostrarAviso && (
+            <div className="relative bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md mb-6">
+              <button
+                onClick={cerrarAviso}
+                className="absolute top-2 right-3 text-yellow-800 hover:text-yellow-600 text-lg"
+              >
+                ×
+              </button>
+              <p className="font-bold mb-1">🔔 IMPORTANTE</p>
+              <p className="text-sm leading-relaxed">
+                En Fútbol Analytics recomendamos{" "}
+                <strong>no apostar a cuotas inferiores a 1.60</strong>.<br />
+                Si la cuota es más baja, es preferible{" "}
+                <strong>esperar al directo (LIVE)</strong> y entrar solo si
+                alcanza el valor mínimo indicado.
+              </p>
+            </div>
+          )}
+
           {isCargando ? (
             <div className="flex justify-center items-center h-[300px] text-gray-500 text-lg">
               <i className="fas fa-spinner fa-spin mr-2"></i>
