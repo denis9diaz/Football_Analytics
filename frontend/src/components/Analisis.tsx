@@ -4,6 +4,7 @@ import DatePicker from "react-datepicker";
 import { format, addDays, subDays, isSameDay, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -56,11 +57,7 @@ export default function Analisis() {
       return;
     }
 
-    fetch(`${API_URL}/api/favoritos/`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
-      },
-    })
+    fetchWithAuth(`${API_URL}/api/favoritos/`)
       .then((res) => res.json())
       .then((data: Favorito[]) => {
         if (Array.isArray(data)) {
@@ -173,12 +170,12 @@ export default function Analisis() {
     try {
       if (existente) {
         // Eliminar favorito
-        const res = await fetch(`${API_URL}/api/favoritos/${existente.id}/`, {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("access")}`,
-          },
-        });
+        const res = await fetchWithAuth(
+          `${API_URL}/api/favoritos/${existente.id}/`,
+          {
+            method: "DELETE",
+          }
+        );
 
         if (res.ok) {
           setFavoritos((prev) =>
@@ -190,12 +187,8 @@ export default function Analisis() {
         }
       } else {
         // Añadir favorito
-        const res = await fetch(`${API_URL}/api/favoritos/`, {
+        const res = await fetchWithAuth(`${API_URL}/api/favoritos/`, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("access")}`,
-          },
           body: JSON.stringify({ partido_analisis_id: partidoAnalisisId }),
         });
 
@@ -249,7 +242,7 @@ export default function Analisis() {
           <div className="relative bg-yellow-100 border-l-4 border-yellow-500 text-yellow-800 p-4 rounded-md mb-6 mx-2 sm:mx-0">
             <button
               onClick={cerrarAviso}
-                className="absolute top-2 right-3 text-yellow-800 cursor-pointer hover:text-yellow-600 text-2xl"
+              className="absolute top-2 right-3 text-yellow-800 cursor-pointer hover:text-yellow-600 text-2xl"
             >
               ×
             </button>

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -8,23 +9,9 @@ export default function CuentaForm() {
   const [editMode, setEditMode] = useState(false);
 
   useEffect(() => {
-    const token = localStorage.getItem("access");
-    if (!token) {
-      console.error("Token de acceso no encontrado en localStorage");
-      return;
-    }
-
-    fetch(`${API_URL}/api/auth/user/`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then((res) => {
-        console.log("Respuesta de la API:", res);
-        return res.json();
-      })
+    fetchWithAuth(`${API_URL}/api/auth/user/`)
+      .then((res) => res.json())
       .then((data) => {
-        console.log("Datos recibidos:", data);
         setUsername(data.username);
         setEmail(data.email);
       })
@@ -32,15 +19,10 @@ export default function CuentaForm() {
   }, []);
 
   const handleSave = async () => {
-    const token = localStorage.getItem("access");
-    if (!token || !username.trim()) return;
+    if (!username.trim()) return;
 
-    const res = await fetch(`${API_URL}/api/auth/update-username/`, {
+    const res = await fetchWithAuth(`${API_URL}/api/auth/update-username/`, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({ username }),
     });
 

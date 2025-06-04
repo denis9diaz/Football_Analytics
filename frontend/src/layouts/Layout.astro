@@ -1,5 +1,6 @@
 ---
 import Navbar from "../components/Navbar.astro";
+const apiUrl = import.meta.env.PUBLIC_API_URL;
 ---
 
 <!doctype html>
@@ -46,23 +47,92 @@ import Navbar from "../components/Navbar.astro";
       rel="stylesheet"
     />
   </head>
-  <body>
-    <Navbar/>
+  <body data-api-url={apiUrl}>
+    <Navbar />
     <slot />
   </body>
+  <script>
+    const ACCESS_LIFETIME_MINUTES = 10;
+    const REFRESH_INTERVAL_MINUTES = 8;
+
+    let lastActivity = Date.now();
+
+    function updateActivity() {
+      lastActivity = Date.now();
+    }
+
+    window.addEventListener("mousemove", updateActivity);
+    window.addEventListener("keydown", updateActivity);
+    window.addEventListener("mousedown", updateActivity);
+    window.addEventListener("touchstart", updateActivity);
+
+    function logout() {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      localStorage.removeItem("username");
+      window.location.href = "/login";
+    }
+
+    async function silentTokenRefresh() {
+      const refresh = localStorage.getItem("refresh");
+      if (!refresh) {
+        console.error("No refresh token found.");
+        return;
+      }
+
+      const API_URL = document.body.getAttribute("data-api-url");
+      if (!API_URL) {
+        console.error("API URL not found.");
+        return;
+      }
+
+      try {
+        const response = await fetch(`${API_URL}/api/auth/refresh/`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ refresh }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          localStorage.setItem("access", data.access);
+          console.log("Token refreshed successfully.");
+        } else {
+          console.error("Token refresh failed.");
+          logout();
+        }
+      } catch (error) {
+        console.error("Error during token refresh:", error);
+        logout();
+      }
+    }
+
+    setInterval(() => {
+      const timeSinceLastActivity = Date.now() - lastActivity;
+      console.log(`Time since last activity: ${timeSinceLastActivity} ms`);
+
+      if (timeSinceLastActivity < ACCESS_LIFETIME_MINUTES * 60 * 1000) {
+        console.log("Refreshing token...");
+        silentTokenRefresh();
+      } else {
+        console.log("User inactive for too long. Logging out.");
+        logout();
+      }
+    }, REFRESH_INTERVAL_MINUTES * 60 * 1000);
+  </script>
 </html>
 
 <style>
-  html {
+  html,
+  body {
     margin: 0;
     width: 100%;
     height: 100%;
   }
 
   body {
-    margin: 0;
-    width: 100%;
-    height: 100%;
     overflow-x: hidden;
   }
 

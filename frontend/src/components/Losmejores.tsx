@@ -3,6 +3,7 @@ import MetodosSidebar from "./MetodosSidebar";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import "animate.css";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -54,11 +55,7 @@ export default function LosMejores() {
   };
 
   useEffect(() => {
-    fetch(`${API_URL}/api/ranking-partidos-analizados/`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
-      },
-    })
+    fetchWithAuth(`${API_URL}/api/ranking-partidos-analizados/`)
       .then((res) => res.json())
       .then((data) => {
         setPartidosAnalizados(data);

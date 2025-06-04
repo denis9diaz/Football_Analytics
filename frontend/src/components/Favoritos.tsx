@@ -3,6 +3,7 @@ import DatePicker from "react-datepicker";
 import { format, addDays, subDays } from "date-fns";
 import { es } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
+import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -41,11 +42,7 @@ export default function Favoritos() {
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/favoritos/`, {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
-      },
-    })
+    fetchWithAuth(`${API_URL}/api/favoritos/`)
       .then((res) => res.json())
       .then((data: Favorito[]) => {
         if (Array.isArray(data)) {
@@ -62,11 +59,8 @@ export default function Favoritos() {
   }, []);
 
   const toggleFavorito = async (favoritoId: number) => {
-    await fetch(`${API_URL}/api/favoritos/${favoritoId}/`, {
+    await fetchWithAuth(`${API_URL}/api/favoritos/${favoritoId}/`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("access")}`,
-      },
     });
     setFavoritos((prev) => prev.filter((f) => f.id !== favoritoId));
   };
