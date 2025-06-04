@@ -82,7 +82,7 @@ export default function LosMejores() {
     ? partidosAnalizados[metodoSeleccionado] || []
     : [];
   return (
-    <div className="bg-white min-h-screen w-full pt-5">
+    <div className="bg-white min-h-[calc(100vh-105px)] w-full overflow-hidden pt-5">
       <header className="max-w-6xl mx-auto px-4 py-4 md:hidden">
         <MetodosSidebar
           metodoSeleccionado={metodoSeleccionado}

@@ -7,7 +7,7 @@ import AuthGuard from "../components/AuthGuard";
 
 <Layout>
   <AuthGuard client:only="react">
-    <div class="bg-white min-h-screen w-full">
+    <div class="bg-white min-[calc(100vh-64px)] w-full overflow-hidden">
       <main class="max-w-7xl mx-auto pt-8 px-4 py-10">
         <LosMejoresComponent client:load />
       </main>
