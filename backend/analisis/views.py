@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from rest_framework import status
+from datetime import datetime
 
 from .models import Liga, Partido, PartidoAnalisis, Favorito
 from .serializers import (
@@ -35,6 +36,42 @@ def partidos_analizados_por_metodo(request, metodo_nombre):
     ).select_related('partido', 'partido__liga')
     serializer = PartidoAnalisisSerializer(partidos, many=True)
     return Response(serializer.data)
+
+# === RANKING PARTIDOS ANALIZADOS ===
+@api_view(['GET'])
+def ranking_partidos_analizados(request):
+    from django.utils.timezone import now
+    hoy = now().date()
+
+    partidos_por_metodo = (
+        PartidoAnalisis.objects.filter(
+            partido__fecha__date=hoy,
+            porcentaje_acierto__isnull=False
+        )
+        .select_related('partido', 'partido__liga', 'metodo')
+        .order_by('-porcentaje_acierto')
+    )
+
+    ranking = {}
+    for partido in partidos_por_metodo:
+        metodo_nombre = partido.metodo.nombre
+        if metodo_nombre not in ranking:
+            ranking[metodo_nombre] = []
+        if len(ranking[metodo_nombre]) < 5:
+            ranking[metodo_nombre].append(partido)
+
+    # DEBUG: imprimir resultado por consola
+    print("🎯 RANKING GENERADO:")
+    for metodo, partidos in ranking.items():
+        print(f"🧠 {metodo}: {[p.id for p in partidos]}")
+
+    response_data = {
+        metodo: PartidoAnalisisSerializer(partidos, many=True).data
+        for metodo, partidos in ranking.items()
+    }
+
+    return Response(response_data)
+
 
 # === FAVORITOS ===
 class FavoritoListCreateView(generics.ListCreateAPIView):
