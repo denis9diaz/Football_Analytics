@@ -45,9 +45,8 @@
     </div>
 
     <!-- Menú móvil -->
-    <div id="mobile-menu" class="md:hidden hidden mt-4 space-y-4 pb-4 px-2">
-      <div id="mobile-nav-center"></div>
-      <div id="mobile-nav-right"></div>
+    <div id="mobile-menu" class="md:hidden hidden mt-4 pb-4 px-4">
+      <div id="mobile-nav-all" class="flex flex-col space-y-2"></div>
     </div>
   </div>
 </nav>
@@ -56,143 +55,143 @@
 <div class="h-8"></div>
 
 <script is:inline>
-  const centerNav = document.getElementById("nav-center");
-  const rightNav = document.getElementById("nav-right");
-  const mobileCenterNav = document.getElementById("mobile-nav-center");
-  const mobileRightNav = document.getElementById("mobile-nav-right");
-  const mobileMenu = document.getElementById("mobile-menu");
-  const menuToggle = document.getElementById("menu-toggle");
+  document.addEventListener("DOMContentLoaded", () => {
+    const centerNav = document.getElementById("nav-center");
+    const rightNav = document.getElementById("nav-right");
+    const mobileMenu = document.getElementById("mobile-menu");
+    const menuToggle = document.getElementById("menu-toggle");
 
-  const clearSession = () => {
-    localStorage.removeItem("access");
-    localStorage.removeItem("refresh");
-    localStorage.removeItem("username");
-  };
+    const clearSession = () => {
+      localStorage.removeItem("access");
+      localStorage.removeItem("refresh");
+      localStorage.removeItem("username");
+    };
 
-  menuToggle?.addEventListener("click", () => {
-    mobileMenu.classList.toggle("hidden");
-  });
+    menuToggle?.addEventListener("click", () => {
+      mobileMenu.classList.toggle("hidden");
+      mobileMenu.classList.toggle("block");
+    });
 
-  const username = localStorage.getItem("username");
-  const access = localStorage.getItem("access");
+    async function checkToken() {
+      const API_URL = document
+        .querySelector("nav[data-api-url]")
+        ?.getAttribute("data-api-url");
 
-  async function checkToken() {
-    const API_URL = document
-      .querySelector("nav[data-api-url]")
-      ?.getAttribute("data-api-url");
+      const access = localStorage.getItem("access");
+      const username = localStorage.getItem("username");
 
-    if (!access || !API_URL) {
-      clearSession();
-      showGuestLinks();
-      return;
-    }
+      if (!access || !API_URL) {
+        clearSession();
+        showGuestLinks();
+        return;
+      }
 
-    try {
-      const res = await fetch(`${API_URL}/api/auth/validate-token/`, {
-        headers: {
-          Authorization: `Bearer ${access}`,
-        },
-      });
+      try {
+        const res = await fetch(`${API_URL}/api/auth/validate-token/`, {
+          headers: {
+            Authorization: `Bearer ${access}`,
+          },
+        });
 
-      if (res.ok) {
-        showUserLinks(localStorage.getItem("username"));
-      } else {
+        if (res.ok) {
+          showUserLinks(username);
+        } else {
+          clearSession();
+          showGuestLinks();
+        }
+      } catch (err) {
         clearSession();
         showGuestLinks();
       }
-    } catch (err) {
-      console.error("Error al validar el token:", err);
-      clearSession();
-      showGuestLinks();
     }
-  }
 
-  function showUserLinks(username) {
-    const links = `
-      <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Partidos</a>
-      <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>
-      <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>
-      <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
-      <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
+    function showUserLinks(username) {
+      const links = `
+        <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Partidos</a>
+        <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>
+        <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>
+        <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
+        <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
 
-    centerNav.innerHTML = links;
-    mobileCenterNav.innerHTML = links;
+      const dropdown = `
+        <div class="relative inline-block text-left group">
+          <button id="user-menu-button" class="flex items-center cursor-pointer space-x-2 text-base font-semibold text-gray-900 hover:text-blue-700">
+            <i class="fas fa-user"></i>
+            <span id="user-name" class="text-base">${username}</span>
+            <i class="fas fa-chevron-down"></i>
+          </button>
+          <div id="user-dropdown" class="hidden absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10 text-sm left-0 md:right-0 border border-blue-200">
+            <a href="/cuenta" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Mi cuenta</a>
+            <div class="border-t border-gray-100"></div>
+            <button id="logout-button" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">Cerrar sesión</button>
+          </div>
+        </div>`;
 
-    const dropdown = `
-      <div class="relative inline-block text-left group">
-        <button id="user-menu-button" class="flex items-center cursor-pointer space-x-2 text-base font-semibold text-gray-900 hover:text-blue-700">
-          <i class="fas fa-user"></i>
-          <span id="user-name" class="text-base">${username}</span>
-          <i class="fas fa-chevron-down"></i>
-        </button>
-        <div id="user-dropdown" class="hidden absolute mt-2 w-48 bg-white rounded-md shadow-lg z-10 text-sm left-0 md:right-0 border border-blue-200">
-          <a href="/cuenta" class="block px-4 py-2 hover:bg-gray-100 text-gray-700">Mi cuenta</a>
-          <div class="border-t border-gray-100"></div>
-          <button id="logout-button" class="block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50">Cerrar sesión</button>
-        </div>
-      </div>`;
+      centerNav.innerHTML = links;
+      rightNav.innerHTML = dropdown;
+      rightNav.classList.remove("opacity-0");
 
-    rightNav.innerHTML = dropdown;
-    mobileRightNav.innerHTML = dropdown;
+      const mobileAll = document.getElementById("mobile-nav-all");
+      if (mobileAll) {
+        mobileAll.innerHTML = links + dropdown;
+        bindDropdownEvents(mobileAll);
+      }
 
-    bindDropdownEvents(document);
-    bindDropdownEvents(mobileMenu);
-    rightNav.classList.remove("opacity-0");
-  }
+      bindDropdownEvents(document);
+    }
 
-  function showGuestLinks() {
-    const center = `
-      <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Partidos</a>
-      <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
-      <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
+    function showGuestLinks() {
+      const center = `
+        <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Partidos</a>
+        <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
+        <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
 
-    const right = `
-      <a href="/login" class="text-base font-semibold text-gray-800 hover:text-blue-500">Iniciar sesión</a>
-      <a
-        href="/registro"
-        class="text-base font-semibold px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition"
-      >
-        Registrarse
-      </a>`;
+      const right = `
+        <a href="/login" class="block text-base font-semibold text-gray-800 hover:text-blue-500">Iniciar sesión</a>
+        <a href="/registro" class="block w-fit text-base font-semibold px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">Registrarse</a>`;
 
-    centerNav.innerHTML = center;
-    mobileCenterNav.innerHTML = center;
-    rightNav.innerHTML = right;
-    mobileRightNav.innerHTML = right;
-    rightNav.classList.remove("opacity-0");
-  }
+      centerNav.innerHTML = center;
+      rightNav.innerHTML = right;
+      rightNav.classList.remove("opacity-0");
 
-  function bindDropdownEvents(scope) {
-    const btn = scope.querySelector("#user-menu-button");
-    const dropdown = scope.querySelector("#user-dropdown");
-    const logout = scope.querySelector("#logout-button");
+      const mobileAll = document.getElementById("mobile-nav-all");
+      if (mobileAll) {
+        mobileAll.innerHTML = center + right;
+      }
+    }
 
-    btn?.addEventListener("click", (e) => {
-      e.stopPropagation();
-      dropdown?.classList.toggle("hidden");
-    });
+    function bindDropdownEvents(scope) {
+      const btn = scope.querySelector("#user-menu-button");
+      const dropdown = scope.querySelector("#user-dropdown");
+      const logout = scope.querySelector("#logout-button");
 
-    logout?.addEventListener("click", () => {
-      clearSession();
-      window.location.href = "/";
-    });
+      btn?.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown?.classList.toggle("hidden");
+      });
 
-    document.addEventListener("click", (e) => {
-      if (!scope.contains(e.target)) {
-        dropdown?.classList.add("hidden");
+      logout?.addEventListener("click", () => {
+        clearSession();
+        window.location.href = "/";
+      });
+
+      document.addEventListener("click", (e) => {
+        if (!scope.contains(e.target)) {
+          dropdown?.classList.add("hidden");
+        }
+      });
+    }
+
+    window.addEventListener("usernameUpdated", (event) => {
+      const newUsername = event.detail.username;
+      const userNameSpan = document.querySelector("#user-name");
+      if (userNameSpan) {
+        userNameSpan.textContent = newUsername;
       }
     });
-  }
 
-  window.addEventListener("usernameUpdated", (event) => {
-    const newUsername = event.detail.username;
-    const userNameSpan = document.querySelector("#user-name");
-    if (userNameSpan) {
-      userNameSpan.textContent = newUsername;
-    }
+    checkToken();
   });
-
-  checkToken();
 </script>
 
 <link
@@ -203,5 +202,48 @@
 <style>
   nav {
     backdrop-filter: blur(10px);
+  }
+
+  @media (max-width: 890px) {
+    .md\:hidden {
+      display: block !important;
+    }
+
+    .md\:flex {
+      display: none !important;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .flex {
+      display: flex !important;
+    }
+
+    .items-center {
+      align-items: center !important;
+    }
+
+    .space-x-6 {
+      margin-left: -6px !important;
+      margin-right: -6px !important;
+    }
+
+    .w-auto {
+      width: auto !important;
+    }
+
+    .flex-1 {
+      flex: 1 !important;
+    }
+
+    .justify-center {
+      justify-content: center !important;
+    }
+
+    .mt-0 {
+      margin-top: 0 !important;
+    }
   }
 </style>

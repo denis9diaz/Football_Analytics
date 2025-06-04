@@ -129,7 +129,7 @@ export default function LosMejores() {
             </p>
           ) : (
             <div className="flex flex-col gap-4 sm:grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 2xl:grid-cols-1">
-              {partidosMostrar.map((partido, index) => {
+              {partidosMostrar.slice(0, 3).map((partido, index) => {
                 const ranking = index + 1;
                 const p = partido;
                 const valor = parseFloat(p.valor_estimado);

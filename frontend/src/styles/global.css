@@ -7,4 +7,6 @@
 
 body {
   font-family: var(--font-inter);
+  overflow-x: hidden;
+  overflow-y: auto;
 }
