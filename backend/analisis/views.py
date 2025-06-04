@@ -60,11 +60,6 @@ def ranking_partidos_analizados(request):
         if len(ranking[metodo_nombre]) < 5:
             ranking[metodo_nombre].append(partido)
 
-    # DEBUG: imprimir resultado por consola
-    print("🎯 RANKING GENERADO:")
-    for metodo, partidos in ranking.items():
-        print(f"🧠 {metodo}: {[p.id for p in partidos]}")
-
     response_data = {
         metodo: PartidoAnalisisSerializer(partidos, many=True).data
         for metodo, partidos in ranking.items()
