@@ -194,3 +194,32 @@ class ContactView(APIView):
             return Response({"detail": "Mensaje enviado correctamente."}, status=200)
         except Exception as e:
             return Response({"detail": "Error al enviar el mensaje."}, status=500)
+
+
+class UserDetailView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        return Response({
+            'username': user.username,
+            'email': user.email,
+        })
+
+
+class UpdateUsernameView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def patch(self, request):
+        new_username = request.data.get("username", "").strip()
+
+        if not new_username:
+            return Response({'detail': 'El nombre de usuario no puede estar vacío.'}, status=400)
+
+        if User.objects.filter(username=new_username).exclude(id=request.user.id).exists():
+            return Response({'detail': 'Ese nombre de usuario ya está en uso.'}, status=400)
+
+        request.user.username = new_username
+        request.user.save()
+
+        return Response({'detail': 'Nombre de usuario actualizado correctamente.'}, status=200)

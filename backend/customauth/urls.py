@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import RegisterView, ActivateUserView, ValidateTokenView, SendTempPasswordView, ForceChangePasswordView, ContactView
+from .views import RegisterView, ActivateUserView, ValidateTokenView, SendTempPasswordView, ForceChangePasswordView, ContactView, UserDetailView, UpdateUsernameView
 from .custom_token import CustomTokenObtainPairView
 
 urlpatterns = [
@@ -10,4 +10,6 @@ urlpatterns = [
     path('send_temp_password/', SendTempPasswordView.as_view()),
     path('force_change_password/', ForceChangePasswordView.as_view(), name='force_change_password'),
     path('contact/', ContactView.as_view(), name='contact'),
+    path('user/', UserDetailView.as_view(), name='user-detail'),
+    path('update-username/', UpdateUsernameView.as_view(), name='update-username'),
 ]
