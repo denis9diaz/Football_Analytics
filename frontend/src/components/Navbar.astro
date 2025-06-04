@@ -30,7 +30,10 @@
       </div>
 
       <!-- Derecha: usuario -->
-<div id="nav-right" class="hidden md:flex items-center space-x-4 opacity-0 transition-opacity duration-200">
+      <div
+        id="nav-right"
+        class="hidden md:flex items-center space-x-4 opacity-0 transition-opacity duration-200"
+      >
         <!-- Los mejores de hoy link -->
         <a
           href="/losmejores"
@@ -117,7 +120,7 @@
 
     const dropdown = `
       <div class="relative inline-block text-left group">
-        <button id="user-menu-button" class="flex items-center cursor-pointer space-x-2 text-base font-semibold text-blue-600 hover:text-blue-700">
+        <button id="user-menu-button" class="flex items-center cursor-pointer space-x-2 text-base font-semibold text-gray-900 hover:text-blue-700">
           <i class="fas fa-user"></i>
           <span id="user-name" class="text-base">${username}</span>
           <i class="fas fa-chevron-down"></i>
@@ -159,7 +162,6 @@
     rightNav.classList.remove("opacity-0");
   }
 
-  
   function bindDropdownEvents(scope) {
     const btn = scope.querySelector("#user-menu-button");
     const dropdown = scope.querySelector("#user-dropdown");

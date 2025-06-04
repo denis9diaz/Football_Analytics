@@ -168,7 +168,7 @@ export default function Favoritos() {
                         <div className="flex items-center justify-between px-4 py-2 bg-blue-100 text-sm font-semibold text-blue-900 uppercase rounded-t">
                           {liga.nombre}
                         </div>
-                        <div className="overflow-x-auto border border-gray-200 rounded-b">
+                        <div className="overflow-x-auto border border-gray-200 rounded-b bg-[#fefefe]">
                           <table className="min-w-[650px] w-full text-sm text-left table-fixed">
                             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                               <tr>
@@ -197,7 +197,7 @@ export default function Favoritos() {
                                 return (
                                   <tr
                                     key={f.id}
-                                    className="hover:bg-gray-50 border-b border-gray-200 last:border-b-0"
+                                    className="hover:bg-gray-100 border-b border-gray-200 last:border-b-0 transition-colors"
                                   >
                                     <td className="px-4 py-2 text-gray-700">
                                       {format(
