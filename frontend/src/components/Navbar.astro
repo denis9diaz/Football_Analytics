@@ -30,7 +30,15 @@
       </div>
 
       <!-- Derecha: usuario -->
-      <div id="nav-right" class="hidden md:flex items-center space-x-4"></div>
+      <div id="nav-right" class="hidden md:flex items-center space-x-4">
+        <!-- Los mejores de hoy link -->
+        <a
+          href="/losmejores"
+          class="text-gray-800 hover:text-gray-600 transition-colors"
+        >
+          Los mejores de hoy
+        </a>
+      </div>
     </div>
 
     <!-- Menú móvil -->
@@ -101,14 +109,15 @@
       <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Partidos</a>
       <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
       <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>
-      <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>`;
+      <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>
+      <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>`;
 
     centerNav.innerHTML = links;
     mobileCenterNav.innerHTML = links;
 
     const dropdown = `
       <div class="relative inline-block text-left group">
-        <button id="user-menu-button" class="flex items-center space-x-2 text-base font-semibold text-blue-500 hover:text-blue-600">
+        <button id="user-menu-button" class="flex items-center cursor-pointer space-x-2 text-base font-semibold text-blue-600 hover:text-blue-700">
           <i class="fas fa-user"></i>
           <span id="user-name" class="text-base">${username}</span>
           <i class="fas fa-chevron-down"></i>
