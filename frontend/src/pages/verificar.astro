@@ -5,12 +5,14 @@ import "animate.css";
 
 const uid = Astro.url.searchParams.get("uid");
 const token = Astro.url.searchParams.get("token");
+
 const API_URL = import.meta.env.PUBLIC_API_URL;
 ---
 
 <Layout>
   <section
     class="max-w-xl mx-auto px-6 py-20 text-center animate__animated animate__fadeIn"
+    data-api-url={API_URL}
   >
     <div
       id="activation-box"
@@ -46,18 +48,14 @@ const API_URL = import.meta.env.PUBLIC_API_URL;
   </section>
 
   <script is:inline>
+    const section = document.querySelector("section[data-api-url]");
+    const API_URL = section?.getAttribute("data-api-url");
+
     const params = new URLSearchParams(window.location.search);
     const uid = params.get("uid");
     const token = params.get("token");
 
-    const API_URL = "http://localhost:8000"; // ← fijado directamente
-
-    console.log(
-      "🔎 URL completa:",
-      `${API_URL}/api/auth/activate/?uid=${uid}&token=${token}`
-    );
-
-    if (uid && token) {
+    if (API_URL && uid && token) {
       fetch(`${API_URL}/api/auth/activate/?uid=${uid}&token=${token}`)
         .then((res) =>
           res.json().then((data) => ({
