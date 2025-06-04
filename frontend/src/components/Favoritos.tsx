@@ -172,22 +172,22 @@ export default function Favoritos() {
                           <table className="min-w-[650px] w-full text-sm text-left table-fixed">
                             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                               <tr>
-                                <th className="px-4 py-2 w-[90px]">Hora</th>
-                                <th className="px-4 py-2 min-w-[200px]">
+                                <th className="px-4 py-2 w-[70px]">Hora</th>
+                                <th className="px-4 py-2 min-w-[210px]">
                                   Partido
                                 </th>
-                                <th className="px-4 py-2 w-[115px]">
+                                <th className="px-4 py-2 w-[110px]">
                                   Probabilidad
                                 </th>
-                                <th className="px-4 py-2 w-[105px]">
+                                <th className="px-4 py-2 w-[95px]">
                                   Cuota real
                                 </th>
-                                <th className="px-4 py-2 w-[105px]">
+                                <th className="px-4 py-2 w-[98px]">
                                   Cuota casa
                                 </th>
-                                <th className="px-4 py-2 w-[105px]">% Valor</th>
+                                <th className="px-4 py-2 w-[95px]">% Valor</th>
                                 <th className="px-2 py-2 w-[40px] text-center">
-                                  ★
+                                  Fav
                                 </th>
                               </tr>
                             </thead>
