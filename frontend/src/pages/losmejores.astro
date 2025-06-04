@@ -2,12 +2,15 @@
 import Layout from "../layouts/Layout.astro";
 import LosMejoresComponent from "../components/Losmejores";
 import "../styles/global.css";
+import AuthGuard from "../components/AuthGuard";
 ---
 
 <Layout>
-  <div class="bg-white min-h-screen w-full">
-    <main class="max-w-7xl mx-auto pt-8 px-4 py-10">
-      <LosMejoresComponent client:load />
-    </main>
-  </div>
+  <AuthGuard client:only="react">
+    <div class="bg-white min-h-screen w-full">
+      <main class="max-w-7xl mx-auto pt-8 px-4 py-10">
+        <LosMejoresComponent client:load />
+      </main>
+    </div>
+  </AuthGuard>
 </Layout>

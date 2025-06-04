@@ -2,12 +2,15 @@
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
 import AnalisisComponent from "../components/Analisis.tsx";
+import AuthGuard from "../components/AuthGuard";
 ---
 
 <Layout>
-  <div class="bg-white min-h-screen w-full">
-    <main class="max-w-6xl mx-auto pt-8 px-4 py-10">
-      <AnalisisComponent client:load />
-    </main>
-  </div>
+  <AuthGuard client:only="react">
+    <div class="bg-white min-h-screen w-full">
+      <main class="max-w-6xl mx-auto pt-8 px-4 py-10">
+        <AnalisisComponent client:load />
+      </main>
+    </div>
+  </AuthGuard>
 </Layout>
