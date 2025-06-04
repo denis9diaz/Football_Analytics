@@ -30,7 +30,7 @@
       </div>
 
       <!-- Derecha: usuario -->
-      <div id="nav-right" class="hidden md:flex items-center space-x-4">
+<div id="nav-right" class="hidden md:flex items-center space-x-4 opacity-0 transition-opacity duration-200">
         <!-- Los mejores de hoy link -->
         <a
           href="/losmejores"
@@ -107,10 +107,10 @@
   function showUserLinks(username) {
     const links = `
       <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Partidos</a>
-      <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
-      <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>
       <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>
-      <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>`;
+      <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>
+      <a href="/funcionalidades" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Funcionalidades</a>
+      <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
 
     centerNav.innerHTML = links;
     mobileCenterNav.innerHTML = links;
@@ -134,6 +134,7 @@
 
     bindDropdownEvents(document);
     bindDropdownEvents(mobileMenu);
+    rightNav.classList.remove("opacity-0");
   }
 
   function showGuestLinks() {
@@ -155,8 +156,10 @@
     mobileCenterNav.innerHTML = center;
     rightNav.innerHTML = right;
     mobileRightNav.innerHTML = right;
+    rightNav.classList.remove("opacity-0");
   }
 
+  
   function bindDropdownEvents(scope) {
     const btn = scope.querySelector("#user-menu-button");
     const dropdown = scope.querySelector("#user-dropdown");
