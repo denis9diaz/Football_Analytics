@@ -506,7 +506,12 @@ export default function Analisis() {
                                   {p.cuota_estim_real}
                                 </td>
                                 <td className="px-4 py-2 text-gray-800 font-semibold">
-                                  {p.cuota_casa_apuestas}
+                                  {p.cuota_casa_apuestas &&
+                                  !["", "–"].includes(
+                                    p.cuota_casa_apuestas.trim()
+                                  )
+                                    ? p.cuota_casa_apuestas
+                                    : "-"}
                                 </td>
                                 <td
                                   className="px-4 py-2 font-semibold"
