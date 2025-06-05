@@ -20,13 +20,18 @@ class Command(BaseCommand):
         for partido in partidos_hoy:
             local = partido.equipo_local
             visitante = partido.equipo_visitante
+            liga_actual = partido.liga
+            temporada_actual = partido.fecha.year
+            temporadas_validas = [temporada_actual - i for i in range(3)]
 
             def calcular_prob(equipo, fecha_limite):
                 historial = Partido.objects.filter(
-                    Q(equipo_local=equipo) | Q(equipo_visitante=equipo),
+                    (Q(equipo_local=equipo) | Q(equipo_visitante=equipo)),
                     goles_local_ft__isnull=False,
                     goles_visitante_ft__isnull=False,
-                    fecha__lt=fecha_limite
+                    fecha__lt=fecha_limite,
+                    liga=liga_actual,
+                    fecha__year__in=temporadas_validas,
                 ).order_by('-fecha')
 
                 if not historial.exists():

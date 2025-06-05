@@ -20,13 +20,18 @@ class Command(BaseCommand):
         for partido in partidos_hoy:
             local = partido.equipo_local
             visitante = partido.equipo_visitante
+            liga_actual = partido.liga
+            temporada_actual = partido.fecha.year
+            temporadas_validas = [temporada_actual - i for i in range(3)]
 
             def calcular_victorias_local(equipo, fecha_limite):
                 partidos = Partido.objects.filter(
                     equipo_local=equipo,
                     goles_local_ft__isnull=False,
                     goles_visitante_ft__isnull=False,
-                    fecha__lt=fecha_limite
+                    fecha__lt=fecha_limite,
+                    liga=liga_actual,
+                    fecha__year__in=temporadas_validas,
                 ).order_by('-fecha')
 
                 total = partidos.count()
@@ -44,7 +49,9 @@ class Command(BaseCommand):
                     equipo_visitante=equipo,
                     goles_local_ft__isnull=False,
                     goles_visitante_ft__isnull=False,
-                    fecha__lt=fecha_limite
+                    fecha__lt=fecha_limite,
+                    liga=liga_actual,
+                    fecha__year__in=temporadas_validas,
                 ).order_by('-fecha')
 
                 total = partidos.count()

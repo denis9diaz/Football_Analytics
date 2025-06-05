@@ -16,7 +16,7 @@ class Liga(models.Model):
 
 class Equipo(models.Model):
     nombre = models.CharField(max_length=100)
-    liga = models.ForeignKey(Liga, on_delete=models.CASCADE, related_name='equipos')
+    ligas = models.ManyToManyField(Liga, related_name='equipos')  # ✅ ahora puede pertenecer a varias ligas
     codigo_api = models.CharField(max_length=20, unique=True, null=True, blank=True)
 
     def __str__(self):
@@ -77,7 +77,7 @@ class Partido(models.Model):
                 (self.equipo_visitante, 'visitante'),
                 (self.equipo_visitante, 'ambos')
             ]:
-                self._actualizar_racha_equipo(equipo, contexto, self.gol_ht, 'gol_ht')
+                self._actualizar_racha_equipo(equipo, contexto, self.gol_ht, 'gol_ht', self.liga)
 
         if self.goles_local_ft is not None and self.goles_visitante_ft is not None:
             for equipo, goles, contextos in [
@@ -85,7 +85,7 @@ class Partido(models.Model):
                 (self.equipo_visitante, self.goles_visitante_ft, ['visitante', 'ambos'])
             ]:
                 for contexto in contextos:
-                    self._actualizar_racha_equipo(equipo, contexto, goles > 0, 'tts')
+                    self._actualizar_racha_equipo(equipo, contexto, goles > 0, 'tts', self.liga)
 
         if self.btts is not None:
             for equipo, contextos in [
@@ -93,7 +93,7 @@ class Partido(models.Model):
                 (self.equipo_visitante, ['visitante', 'ambos'])
             ]:
                 for contexto in contextos:
-                    self._actualizar_racha_equipo(equipo, contexto, self.btts, 'btts')
+                    self._actualizar_racha_equipo(equipo, contexto, self.btts, 'btts', self.liga)
 
         if self.goles_local_ft is not None and self.goles_visitante_ft is not None:
             gano_local = self.goles_local_ft > self.goles_visitante_ft
@@ -102,16 +102,16 @@ class Partido(models.Model):
                 (self.equipo_visitante, not gano_local, ['visitante', 'ambos'])
             ]:
                 for contexto in contextos:
-                    self._actualizar_racha_equipo(equipo, contexto, cumplido, 'ganar')
+                    self._actualizar_racha_equipo(equipo, contexto, cumplido, 'ganar', self.liga)
 
         if self.goles_local_ft is not None:
             cumple_local = self.goles_local_ft >= 2
             for contexto in ['local', 'ambos']:
-                self._actualizar_racha_equipo(self.equipo_local, contexto, cumple_local, 'over_1_5_marcados')
+                self._actualizar_racha_equipo(self.equipo_local, contexto, cumple_local, 'over_1_5_marcados', self.liga)
 
             cumple_visitante = self.goles_visitante_ft >= 2
             for contexto in ['visitante', 'ambos']:
-                self._actualizar_racha_equipo(self.equipo_visitante, contexto, cumple_visitante, 'over_1_5_recibidos')
+                self._actualizar_racha_equipo(self.equipo_visitante, contexto, cumple_visitante, 'over_1_5_recibidos', self.liga)
 
         for condicion, valor in [('over_1_5', self.over_1_5), ('over_2_5', self.over_2_5)]:
             if valor is not None:
@@ -119,10 +119,10 @@ class Partido(models.Model):
                     (self.equipo_local, 'ambos'),
                     (self.equipo_visitante, 'ambos')
                 ]:
-                    self._actualizar_racha_equipo(equipo, contexto, valor, condicion)
+                    self._actualizar_racha_equipo(equipo, contexto, valor, condicion, self.liga)
 
-    def _actualizar_racha_equipo(self, equipo, contexto, cumplido, condicion):
-        if equipo is None:
+    def _actualizar_racha_equipo(self, equipo, contexto, cumplido, condicion, liga):
+        if equipo is None or liga is None:
             return
 
         racha_actual, _ = RachaEquipo.objects.get_or_create(
@@ -130,10 +130,10 @@ class Partido(models.Model):
             condicion=condicion,
             contexto=contexto,
             tipo='actual',
+            liga=liga,
             defaults={'cantidad': 0}
         )
 
-        # Incrementa si no se cumplió la condición, reinicia a 0 si se cumplió
         racha_actual.cantidad = 0 if cumplido else racha_actual.cantidad + 1
         racha_actual.save()
 
@@ -142,10 +142,10 @@ class Partido(models.Model):
             condicion=condicion,
             contexto=contexto,
             tipo='historica',
+            liga=liga,
             defaults={'cantidad': 0}
         )
 
-        # Actualiza la histórica solo si la actual la supera
         if racha_actual.cantidad > racha_historica.cantidad:
             racha_historica.cantidad = racha_actual.cantidad
             racha_historica.save()
@@ -218,9 +218,10 @@ class RachaEquipo(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO)
     cantidad = models.PositiveIntegerField()
     temporada = models.CharField(max_length=9, null=True, blank=True)
+    liga = models.ForeignKey('Liga', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
-        unique_together = ('equipo', 'condicion', 'contexto', 'tipo', 'temporada')
+        unique_together = ('equipo', 'condicion', 'contexto', 'tipo', 'temporada', 'liga')
 
     def __str__(self):
         return f"{self.equipo} - {self.condicion} ({self.tipo})"

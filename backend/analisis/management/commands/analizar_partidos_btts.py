@@ -19,21 +19,29 @@ class Command(BaseCommand):
         for partido in partidos_hoy:
             local = partido.equipo_local
             visitante = partido.equipo_visitante
+            liga_actual = partido.liga
+            temporada_actual = partido.fecha.year
 
-            def calcular_btts(equipo, como_local, fecha_limite):
+            temporadas_validas = [temporada_actual - i for i in range(3)]  # ej: [2024, 2023, 2022]
+
+            def calcular_btts(equipo, como_local):
                 if como_local:
                     partidos = Partido.objects.filter(
                         equipo_local=equipo,
+                        liga=liga_actual,
+                        fecha__lt=partido.fecha,
+                        fecha__year__in=temporadas_validas,
                         goles_local_ft__isnull=False,
-                        goles_visitante_ft__isnull=False,
-                        fecha__lt=fecha_limite
+                        goles_visitante_ft__isnull=False
                     ).order_by('-fecha')
                 else:
                     partidos = Partido.objects.filter(
                         equipo_visitante=equipo,
+                        liga=liga_actual,
+                        fecha__lt=partido.fecha,
+                        fecha__year__in=temporadas_validas,
                         goles_local_ft__isnull=False,
-                        goles_visitante_ft__isnull=False,
-                        fecha__lt=fecha_limite
+                        goles_visitante_ft__isnull=False
                     ).order_by('-fecha')
 
                 total = partidos.count()
@@ -49,8 +57,8 @@ class Command(BaseCommand):
 
                 return sum(cumple) / total
 
-            prob_local = calcular_btts(local, como_local=True, fecha_limite=partido.fecha)
-            prob_visit = calcular_btts(visitante, como_local=False, fecha_limite=partido.fecha)
+            prob_local = calcular_btts(local, como_local=True)
+            prob_visit = calcular_btts(visitante, como_local=False)
             prob_media = (prob_local + prob_visit) / 2
 
             cuota_real = round(1 / prob_media, 2) if prob_media > 0 else 99.99

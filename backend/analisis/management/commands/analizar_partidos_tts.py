@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from random import uniform
+from django.db.models import Q
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
 
 class Command(BaseCommand):
@@ -23,43 +24,52 @@ class Command(BaseCommand):
 
             local = partido.equipo_local
             visitante = partido.equipo_visitante
+            liga_actual = partido.liga
+            temporada_actual = partido.fecha.year
+            temporadas_validas = [temporada_actual - i for i in range(3)]
 
             def calcular_prob_marcar(equipo, contexto, fecha_limite):
+                filtros_comunes = {
+                    'fecha__lt': fecha_limite,
+                    'liga': liga_actual,
+                    'fecha__year__in': temporadas_validas,
+                }
+
                 if contexto == 'local':
                     partidos = Partido.objects.filter(
                         equipo_local=equipo,
                         marco_local__isnull=False,
-                        fecha__lt=fecha_limite
+                        **filtros_comunes
                     ).order_by('-fecha')
-                    goles = 'marco_local'
+                    campo = 'marco_local'
                 elif contexto == 'visitante':
                     partidos = Partido.objects.filter(
                         equipo_visitante=equipo,
                         marco_visitante__isnull=False,
-                        fecha__lt=fecha_limite
+                        **filtros_comunes
                     ).order_by('-fecha')
-                    goles = 'marco_visitante'
+                    campo = 'marco_visitante'
                 elif contexto == 'local_recibe':
                     partidos = Partido.objects.filter(
                         equipo_local=equipo,
                         marco_visitante__isnull=False,
-                        fecha__lt=fecha_limite
+                        **filtros_comunes
                     ).order_by('-fecha')
-                    goles = 'marco_visitante'
+                    campo = 'marco_visitante'
                 elif contexto == 'visitante_recibe':
                     partidos = Partido.objects.filter(
                         equipo_visitante=equipo,
                         marco_local__isnull=False,
-                        fecha__lt=fecha_limite
+                        **filtros_comunes
                     ).order_by('-fecha')
-                    goles = 'marco_local'
+                    campo = 'marco_local'
                 else:
                     return 0.0
 
                 if not partidos.exists():
                     return 0.0
 
-                cumple = [bool(getattr(p, goles)) for p in partidos]
+                cumple = [bool(getattr(p, campo)) for p in partidos]
                 total = len(cumple)
                 aciertos = sum(cumple)
 
@@ -68,7 +78,7 @@ class Command(BaseCommand):
 
                 porcentaje = aciertos / total
 
-                if not cumple[0]:  # Si el más reciente fue fallo
+                if not cumple[0]:  # fallo reciente
                     racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
                     return 1 - ((1 - porcentaje) ** (racha + 1))
                 return porcentaje
