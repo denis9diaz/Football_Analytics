@@ -11,53 +11,51 @@ API_HOST = os.getenv("RAPIDAPI_HOST")
 
 limiter = APIRateLimiter()
 
-
-def fetch_fixtures(league_id: int, season: str):
+def fetch_cuota_casa(fixture_id: int, mercado: str, valor_objetivo: str, casa: str = "Bet365") -> float | None:
     """
-    Llama al endpoint /fixtures de API-Football vía RapidAPI,
-    para una liga y temporada concretas (todos los partidos).
+    Busca la cuota primero en la casa seleccionada (por defecto Bet365), y si no la encuentra,
+    la busca en cualquier otra casa disponible.
     """
     limiter.wait_if_needed()
 
-    url = f"{API_URL}/fixtures"
+    url = f"{API_URL}/odds"
     headers = {
         "X-RapidAPI-Key": API_KEY,
         "X-RapidAPI-Host": API_HOST,
     }
     params = {
-        "league": league_id,
-        "season": season
+        "fixture": fixture_id
     }
 
     response = requests.get(url, headers=headers, params=params)
-
     if response.status_code != 200:
         raise Exception(f"Error {response.status_code}: {response.text}")
 
-    return response.json()
+    data = response.json().get("response", [])
 
+    # Paso 1: Buscar en la casa principal (Bet365 por defecto)
+    for entrada in data:
+        for bookmaker in entrada.get("bookmakers", []):
+            if bookmaker["name"] == casa:
+                for market in bookmaker.get("bets", []):
+                    if market["name"] == mercado:
+                        for valor in market.get("values", []):
+                            if valor["value"].strip().lower() == valor_objetivo.strip().lower():
+                                try:
+                                    return float(valor["odd"])
+                                except (ValueError, TypeError):
+                                    continue
 
-def fetch_fixtures_futuros(league_id: int, season: str):
-    """
-    Llama al endpoint /fixtures para obtener solo partidos futuros (status=NS).
-    """
-    limiter.wait_if_needed()
+    # Paso 2: Buscar en cualquier otra casa si no se encontró en la principal
+    for entrada in data:
+        for bookmaker in entrada.get("bookmakers", []):
+            for market in bookmaker.get("bets", []):
+                if market["name"] == mercado:
+                    for valor in market.get("values", []):
+                        if valor["value"].strip().lower() == valor_objetivo.strip().lower():
+                            try:
+                                return float(valor["odd"])
+                            except (ValueError, TypeError):
+                                continue
 
-    url = f"{API_URL}/fixtures"
-    headers = {
-        "X-RapidAPI-Key": API_KEY,
-        "X-RapidAPI-Host": API_HOST,
-    }
-    params = {
-        "league": league_id,
-        "season": season,
-        "status": "NS"  # Not Started
-    }
-
-    response = requests.get(url, headers=headers, params=params)
-
-    if response.status_code != 200:
-        raise Exception(f"Error {response.status_code}: {response.text}")
-
-    return response.json()
-
+    return None

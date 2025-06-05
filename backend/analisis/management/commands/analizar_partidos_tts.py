@@ -3,6 +3,7 @@ from django.utils.timezone import now
 from random import uniform
 from django.db.models import Q
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
+from analisis.utils.api import fetch_cuota_casa
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método TTS (Team To Score)'
@@ -78,7 +79,7 @@ class Command(BaseCommand):
 
                 porcentaje = aciertos / total
 
-                if not cumple[0]:  # fallo reciente
+                if not cumple[0]:
                     racha = next((i for i, ok in enumerate(cumple) if ok), len(cumple))
                     return 1 - ((1 - porcentaje) ** (racha + 1))
                 return porcentaje
@@ -91,8 +92,20 @@ class Command(BaseCommand):
                 ) / 2
 
                 cuota_real = round(1 / prob_local, 2) if prob_local > 0 else 99.99
-                cuota_casa = round(max(cuota_real + uniform(-0.25, 0.25), 1.00), 2)
-                valor = round((cuota_casa / cuota_real - 1) * 100, 2)
+
+                try:
+                    cuota_casa = fetch_cuota_casa(
+                        int(partido.codigo_api),
+                        "Home Team Score a Goal",
+                        "Yes"
+                    )
+                    if cuota_casa is None:
+                        raise ValueError("Cuota no encontrada")
+                    valor = round((cuota_casa / cuota_real - 1) * 100, 2)
+                except Exception as e:
+                    self.stdout.write(self.style.WARNING(f"{partido} (LOCAL): ❌ Cuota no encontrada - {e}"))
+                    cuota_casa = None
+                    valor = None
 
                 PartidoAnalisis.objects.create(
                     metodo=metodo,
@@ -105,7 +118,7 @@ class Command(BaseCommand):
                 )
 
                 self.stdout.write(self.style.SUCCESS(
-                    f"{partido} (LOCAL marca) -> prob: {round(prob_local*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor}%"
+                    f"{partido} (LOCAL marca) -> prob: {round(prob_local*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa if cuota_casa is not None else '–'}, valor: {valor if valor is not None else '–'}%"
                 ))
 
             # VISITANTE MARCA
@@ -116,8 +129,20 @@ class Command(BaseCommand):
                 ) / 2
 
                 cuota_real = round(1 / prob_visit, 2) if prob_visit > 0 else 99.99
-                cuota_casa = round(max(cuota_real + uniform(-0.25, 0.25), 1.00), 2)
-                valor = round((cuota_casa / cuota_real - 1) * 100, 2)
+
+                try:
+                    cuota_casa = fetch_cuota_casa(
+                        int(partido.codigo_api),
+                        "Away Team Score a Goal",
+                        "Yes"
+                    )
+                    if cuota_casa is None:
+                        raise ValueError("Cuota no encontrada")
+                    valor = round((cuota_casa / cuota_real - 1) * 100, 2)
+                except Exception as e:
+                    self.stdout.write(self.style.WARNING(f"{partido} (VISITANTE): ❌ Cuota no encontrada - {e}"))
+                    cuota_casa = None
+                    valor = None
 
                 PartidoAnalisis.objects.create(
                     metodo=metodo,
@@ -130,5 +155,5 @@ class Command(BaseCommand):
                 )
 
                 self.stdout.write(self.style.SUCCESS(
-                    f"{partido} (VISITANTE marca) -> prob: {round(prob_visit*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor}%"
+                    f"{partido} (VISITANTE marca) -> prob: {round(prob_visit*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa if cuota_casa is not None else '–'}, valor: {valor if valor is not None else '–'}%"
                 ))

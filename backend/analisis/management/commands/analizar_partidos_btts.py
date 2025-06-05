@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
-from random import uniform
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
+from analisis.utils.api import fetch_cuota_casa
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método BTTS (Both Teams To Score)'
@@ -21,8 +21,7 @@ class Command(BaseCommand):
             visitante = partido.equipo_visitante
             liga_actual = partido.liga
             temporada_actual = partido.fecha.year
-
-            temporadas_validas = [temporada_actual - i for i in range(3)]  # ej: [2024, 2023, 2022]
+            temporadas_validas = [temporada_actual - i for i in range(3)]
 
             def calcular_btts(equipo, como_local):
                 if como_local:
@@ -48,10 +47,7 @@ class Command(BaseCommand):
                 if total == 0:
                     return 0.0
 
-                cumple = [
-                    p.goles_local_ft > 0 and p.goles_visitante_ft > 0
-                    for p in partidos
-                ]
+                cumple = [p.goles_local_ft > 0 and p.goles_visitante_ft > 0 for p in partidos]
                 if total == 1 and not cumple[0]:
                     return 0.0
 
@@ -62,8 +58,18 @@ class Command(BaseCommand):
             prob_media = (prob_local + prob_visit) / 2
 
             cuota_real = round(1 / prob_media, 2) if prob_media > 0 else 99.99
-            cuota_casa = round(max(cuota_real + uniform(-0.25, 0.25), 1.00), 2)
-            valor = round((cuota_casa / cuota_real - 1) * 100, 2)
+
+            try:
+                cuota_casa = fetch_cuota_casa(int(partido.codigo_api), "Both Teams Score", "Yes")
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f"Partido {partido.id}: Error al obtener cuota de casa - {e}"))
+                cuota_casa = None
+
+            if cuota_casa is None:
+                self.stdout.write(self.style.WARNING(f"Partido {partido.id}: ❌ Cuota no encontrada en la API"))
+                valor = None
+            else:
+                valor = round((cuota_casa / cuota_real - 1) * 100, 2)
 
             PartidoAnalisis.objects.create(
                 metodo=metodo,
@@ -75,5 +81,5 @@ class Command(BaseCommand):
             )
 
             self.stdout.write(self.style.SUCCESS(
-                f"{partido} -> BTTS: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor}%"
+                f"Partido {partido.id} -> BTTS: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa if cuota_casa is not None else '–'}, valor: {valor if valor is not None else '–'}%"
             ))

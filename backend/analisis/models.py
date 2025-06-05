@@ -170,8 +170,8 @@ class PartidoAnalisis(models.Model):
     metodo = models.ForeignKey(MetodoAnalisis, on_delete=models.CASCADE, related_name='partidos')
     partido = models.ForeignKey(Partido, on_delete=models.CASCADE)
     cuota_estim_real = models.DecimalField(max_digits=5, decimal_places=2)
-    cuota_casa_apuestas = models.DecimalField(max_digits=5, decimal_places=2)
-    valor_estimado = models.DecimalField(max_digits=7, decimal_places=2)
+    cuota_casa_apuestas = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    valor_estimado = models.DecimalField(max_digits=7, decimal_places=2, null=True, blank=True)
     porcentaje_acierto = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
     favorito = models.BooleanField(default=False)
 

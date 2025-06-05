@@ -40,3 +40,5 @@ class APIRateLimiter:
         # Registrar esta llamada
         self.request_times.append(datetime.utcnow())
         self.daily_count += 1
+
+limiter = APIRateLimiter()

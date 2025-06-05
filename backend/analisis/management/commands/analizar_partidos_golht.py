@@ -3,6 +3,7 @@ from django.utils.timezone import now
 from django.db.models import Q
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
 from random import uniform
+from analisis.utils.api import fetch_cuota_casa  # << IMPORTANTE
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método Over 0.5 HT'
@@ -22,7 +23,7 @@ class Command(BaseCommand):
             visitante = partido.equipo_visitante
             liga_actual = partido.liga
             temporada_actual = partido.fecha.year
-            temporadas_validas = [temporada_actual - i for i in range(3)]  # máx. 2 temporadas anteriores
+            temporadas_validas = [temporada_actual - i for i in range(3)]
 
             def calcular_prob(equipo):
                 historial = Partido.objects.filter(
@@ -36,7 +37,7 @@ class Command(BaseCommand):
 
                 total = historial.count()
                 if total == 0:
-                    return None  # sin datos, omitir
+                    return None
 
                 cumple = [(p.goles_local_ht + p.goles_visitante_ht) > 0 for p in historial]
                 porcentaje = sum(cumple) / total
@@ -53,8 +54,17 @@ class Command(BaseCommand):
 
             prob_media = sum(probs) / len(probs)
             cuota_real = round(1 / prob_media, 2) if prob_media > 0 else 99.99
-            cuota_casa = round(max(cuota_real + uniform(-0.3, 0.3), 1.00), 2)
-            valor_estimado = round((cuota_casa / cuota_real - 1) * 100, 2)
+
+            # 🔍 Obtener cuota real desde la API
+            try:
+                cuota_casa = fetch_cuota_casa(int(partido.codigo_api), "Goals Over/Under First Half", "Over 0.5")
+                if cuota_casa is None:
+                    self.stdout.write(self.style.WARNING(f"{partido}: ❌ Cuota no encontrada en la API"))
+            except Exception as e:
+                self.stdout.write(self.style.WARNING(f"{partido}: Error al obtener cuota de casa - {e}"))
+                cuota_casa = None
+
+            valor_estimado = round((cuota_casa / cuota_real - 1) * 100, 2) if cuota_casa else None
 
             PartidoAnalisis.objects.create(
                 metodo=metodo,
@@ -66,5 +76,5 @@ class Command(BaseCommand):
             )
 
             self.stdout.write(self.style.SUCCESS(
-                f"{partido} -> Over 0.5 HT: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa}, valor: {valor_estimado}%"
+                f"{partido} -> Over 0.5 HT: {round(prob_media*100,2)}%, cuota: {cuota_real}, casa: {cuota_casa if cuota_casa is not None else '–'}, valor: {valor_estimado if valor_estimado is not None else '–'}%"
             ))
