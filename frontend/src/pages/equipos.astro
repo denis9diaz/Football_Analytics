@@ -1,13 +1,13 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
-import EquiposComponent from "../components/Equipos";
+import EquiposPage from "../components/EquiposPage";
 ---
 
 <Layout>
   <div class="bg-white min-h-screen w-full">
     <main class="max-w-6xl mx-auto pt-8 px-4 py-10">
-      <EquiposComponent client:load />
+      <EquiposPage client:only="react" />
     </main>
   </div>
 </Layout>

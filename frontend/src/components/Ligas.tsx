@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 interface Liga {
   id: number;
@@ -12,6 +13,7 @@ interface Liga {
 const Ligas: React.FC = () => {
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchLigas = async () => {
@@ -27,13 +29,17 @@ const Ligas: React.FC = () => {
 
         const data: Liga[] = rawData.map((liga: any) => ({
           ...liga,
-          nivel: Number.isFinite(Number(liga.nivel)) ? Number(liga.nivel) : null,
+          nivel: Number.isFinite(Number(liga.nivel))
+            ? Number(liga.nivel)
+            : null,
         }));
 
         const sorted = data.sort((a, b) => {
           const paisA = (a.pais || a.codigo_pais || "").trim().toLowerCase();
-          const paisB = (b.pais || b.codigo_pais || "").trim().toLowerCase();
-          const comparePais = paisA.localeCompare(paisB);
+          const paisB_local = (b.pais || b.codigo_pais || "")
+            .trim()
+            .toLowerCase();
+          const comparePais = paisA.localeCompare(paisB_local);
           if (comparePais !== 0) return comparePais;
 
           const nivelA = a.nivel ?? 99;
@@ -42,11 +48,7 @@ const Ligas: React.FC = () => {
         });
 
         console.log("🔍 Orden final de ligas:");
-        sorted.forEach((l) => {
-          console.log(
-            `${(l.pais || l.codigo_pais).toUpperCase()} | Nivel (${typeof l.nivel}) ${l.nivel} | ${l.nombre}`
-          );
-        });
+        sorted.forEach((l) => {});
 
         setLigas(sorted);
       } catch (err: any) {
@@ -64,12 +66,16 @@ const Ligas: React.FC = () => {
     return `https://flagcdn.com/w20/${codigo.toLowerCase()}.png`;
   };
 
+  const handleLigaClick = (ligaId: number, ligaNombre: string) => {
+    window.location.href = `/equipos?ligaId=${ligaId}&ligaNombre=${encodeURIComponent(
+      ligaNombre
+    )}`;
+  };
+
   return (
     <div className="min-h-screen py-8 mt-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">
-          Ligas y Banderas
-        </h1>
+        <h1 className="text-2xl font-bold text-gray-800 mb-6">Ligas</h1>
 
         {error ? (
           <p className="text-red-500">Error: {error}</p>
@@ -80,7 +86,8 @@ const Ligas: React.FC = () => {
             {ligas.map((liga) => (
               <div
                 key={liga.id}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-sm font-semibold text-gray-800 rounded"
+                onClick={() => handleLigaClick(liga.id, liga.nombre)}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-sm font-semibold text-gray-800 rounded cursor-pointer hover:bg-blue-200"
               >
                 <img
                   src={getFlagSrc(liga.codigo_iso_pais || "")}
@@ -88,7 +95,8 @@ const Ligas: React.FC = () => {
                   className="w-5 h-[14px] object-cover"
                 />
                 <span>
-                  {(liga.pais || liga.codigo_pais).toUpperCase()} — {liga.nombre}
+                  {(liga.pais || liga.codigo_pais).toUpperCase()} —{" "}
+                  {liga.nombre}
                 </span>
               </div>
             ))}
