@@ -12,6 +12,8 @@ type Liga = {
   id: number;
   nombre: string;
   codigo_pais: string;
+  pais?: string;
+  codigo_iso_pais?: string;
 };
 
 type PartidoAnalizado = {
@@ -38,6 +40,19 @@ type Favorito = {
   };
 };
 
+function isoToEmojiFlag(iso: string): string {
+  const clean = iso.toUpperCase();
+  if (clean.length !== 2) return ""; // evita mostrar basura
+  return clean
+    .split("")
+    .map((c) => String.fromCodePoint(127397 + c.charCodeAt(0)))
+    .join("");
+}
+
+function capitalize(text: string) {
+  return text.charAt(0).toUpperCase() + text.slice(1).toLowerCase();
+}
+
 export default function Analisis() {
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [partidos, setPartidos] = useState<PartidoAnalizado[]>([]);
@@ -53,66 +68,73 @@ export default function Analisis() {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!metodoSeleccionado) {
-      setIsCargando(false);
-      return;
-    }
+  if (!metodoSeleccionado) {
+    setIsCargando(false);
+    return;
+  }
 
-    fetchWithAuth(`${API_URL}/api/favoritos/`)
-      .then((res) => res.json())
-      .then((data: Favorito[]) => {
-        if (Array.isArray(data)) {
-          setFavoritos(data);
-        } else {
-          console.error("La respuesta de favoritos no es un array:", data);
-          setFavoritos([]);
-        }
-      })
-      .catch((err) => {
-        console.error("Error al cargar favoritos:", err);
+  setIsCargando(true); // 🔹 Activa el estado de carga antes de comenzar
+
+  fetchWithAuth(`${API_URL}/api/favoritos/`)
+    .then((res) => res.json())
+    .then((data: Favorito[]) => {
+      if (Array.isArray(data)) {
+        setFavoritos(data);
+      } else {
+        console.error("La respuesta de favoritos no es un array:", data);
         setFavoritos([]);
-      });
+      }
+    })
+    .catch((err) => {
+      console.error("Error al cargar favoritos:", err);
+      setFavoritos([]);
+    });
 
-    fetch(
-      `${API_URL}/api/partidos-analisis/${encodeURIComponent(
-        metodoSeleccionado
-      )}/`
-    )
-      .then((res) => res.json())
-      .then((data: PartidoAnalizado[]) => {
-        const duplicados =
-          metodoSeleccionado === "TTS"
-            ? data.flatMap((p) => {
-                if (!p.equipo_destacado) return [];
-                return [p];
-              })
-            : data;
+  fetch(
+    `${API_URL}/api/partidos-analisis/${encodeURIComponent(
+      metodoSeleccionado
+    )}/`
+  )
+    .then((res) => res.json())
+    .then((data: PartidoAnalizado[]) => {
+      const duplicados =
+        metodoSeleccionado === "TTS"
+          ? data.flatMap((p) => {
+              if (!p.equipo_destacado) return [];
+              return [p];
+            })
+          : data;
 
-        setPartidos(duplicados);
+      setPartidos(duplicados);
 
-        const partidosFechaSeleccionada = duplicados.filter(
-          (p) =>
-            p.partido.fecha.slice(0, 10) ===
-            fechaSeleccionada.toISOString().slice(0, 10)
-        );
+      const partidosFechaSeleccionada = duplicados.filter(
+        (p) =>
+          p.partido.fecha.slice(0, 10) ===
+          fechaSeleccionada.toISOString().slice(0, 10)
+      );
 
-        const ligasUnicas = Array.from(
-          new Set<string>(
-            partidosFechaSeleccionada.map((p) => JSON.stringify(p.partido.liga))
+      const ligasUnicas = Array.from(
+        new Set<string>(
+          partidosFechaSeleccionada.map((p) =>
+            JSON.stringify(p.partido.liga)
           )
-        ).map((ligaJson) => JSON.parse(ligaJson) as Liga);
+        )
+      ).map((ligaJson) => JSON.parse(ligaJson) as Liga);
 
-        setLigas(ligasUnicas);
+      setLigas(ligasUnicas);
+      setLigaFiltrada(null);
 
-        setLigaFiltrada(null);
-
+      // 🔹 Evita render intermedio antes de completar
+      setTimeout(() => {
         setIsCargando(false);
-      })
-      .catch((err) => {
-        console.error("Error al cargar análisis:", err);
-        setIsCargando(false);
-      });
-  }, [metodoSeleccionado, fechaSeleccionada]);
+      }, 0);
+    })
+    .catch((err) => {
+      console.error("Error al cargar análisis:", err);
+      setIsCargando(false);
+    });
+}, [metodoSeleccionado, fechaSeleccionada]);
+
 
   const partidosFiltradosPorFecha = partidos.filter(
     (p) =>
@@ -266,12 +288,7 @@ export default function Analisis() {
             </p>
           </div>
         )}
-        {isCargando ? (
-          <div className="flex justify-center items-center h-[300px] text-gray-500 text-lg">
-            <i className="fas fa-spinner fa-spin mr-2"></i>
-            Cargando análisis...
-          </div>
-        ) : metodoSeleccionado ? (
+        {isCargando ? null : metodoSeleccionado ? (
           <>
             <div className="flex justify-between items-center mb-4">
               <div className="text-sm font-medium text-gray-700">
@@ -343,6 +360,9 @@ export default function Analisis() {
               .filter(
                 (liga) => ligaFiltrada === null || liga.id === ligaFiltrada
               )
+              .sort((a, b) =>
+                (a.pais || a.codigo_pais).localeCompare(b.pais || b.codigo_pais)
+              )
               .map((liga) => {
                 let partidosLiga = partidosAgrupados[liga.id] || [];
                 if (ordenCampo) {
@@ -354,8 +374,18 @@ export default function Analisis() {
 
                 return (
                   <div key={liga.id} className="mb-1">
-                    <div className="flex items-center justify-between px-4 py-2 bg-blue-100 text-sm font-semibold text-blue-900 uppercase rounded-t">
-                      {liga.nombre}
+                    <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-sm font-semibold text-gray-800 rounded-t">
+                      <img
+                        src={`https://flagcdn.com/w20/${(
+                          liga.codigo_iso_pais || ""
+                        ).toLowerCase()}.png`}
+                        alt={liga.codigo_iso_pais}
+                        className="w-5 h-[14px] object-cover"
+                      />
+                      <span>
+                        {(liga.pais || liga.codigo_pais).toUpperCase()} -{" "}
+                        {capitalize(liga.nombre)}
+                      </span>
                     </div>
 
                     {partidosLiga.length > 0 ? (
@@ -565,11 +595,11 @@ export default function Analisis() {
                           </tbody>
                         </table>
                       </div>
-                    ) : (
+                    ) : !isCargando ? (
                       <p className="px-4 py-2 text-gray-500">
                         No hay partidos.
                       </p>
-                    )}
+                    ) : null}
                   </div>
                 );
               })}
