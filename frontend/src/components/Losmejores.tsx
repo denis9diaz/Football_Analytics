@@ -201,10 +201,16 @@ export default function LosMejores() {
                       </div>
                       <div className="text-gray-800 font-medium text-base">
                         <span className="block">
-                          Cuota real: {p.cuota_estim_real}
+                          Cuota Fútbol Analytics:{" "}
+                          <span className="text-blue-700 font-bold text-lg">
+                            @{p.cuota_estim_real}
+                          </span>
                         </span>
                         <span className="block">
-                          Cuota casa: {p.cuota_casa_apuestas}
+                          Casas de apuestas:{" "}
+                          <span className="text-black font-bold text-lg">
+                            @{p.cuota_casa_apuestas}
+                          </span>
                         </span>
                       </div>
 

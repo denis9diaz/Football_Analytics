@@ -50,6 +50,7 @@ export default function Analisis() {
   const [ordenAscendente, setOrdenAscendente] = useState<boolean>(true);
   const [favoritos, setFavoritos] = useState<Favorito[]>([]);
   const [isCargando, setIsCargando] = useState(true);
+  const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   useEffect(() => {
     if (!metodoSeleccionado) {
@@ -414,9 +415,10 @@ export default function Analisis() {
                               <th
                                 className="px-4 py-2 w-[110px] cursor-pointer select-none"
                                 onClick={() => handleOrden("cuota_estim_real")}
+                                title="Cuota estimada según Fútbol Analytics."
                               >
                                 <div className="flex items-center gap-1">
-                                  Cuota real
+                                  @Estimada
                                   <span
                                     className={
                                       ordenCampo === "cuota_estim_real"
@@ -433,8 +435,11 @@ export default function Analisis() {
                                 </div>
                               </th>
 
-                              <th className="px-4 py-2 w-[105px]">
-                                Cuota casa
+                              <th
+                                className="px-4 py-2 w-[105px] select-none"
+                                title="Cuota en las casas de apuestas"
+                              >
+                                @Bookies
                               </th>
 
                               <th
