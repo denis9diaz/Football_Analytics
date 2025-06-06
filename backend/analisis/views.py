@@ -6,13 +6,17 @@ from rest_framework import generics
 from rest_framework import status
 from datetime import datetime
 
-from .models import Liga, Partido, PartidoAnalisis, Favorito
+from .models import Liga, Partido, PartidoAnalisis, Favorito, Equipo
 from .serializers import (
     LigaSerializer,
     PartidoSerializer,
     PartidoAnalisisSerializer,
     FavoritoSerializer,
 )
+
+def obtener_temporada(fecha):
+    año = fecha.year
+    return f"{año}-{año + 1}" if fecha.month >= 7 else f"{año - 1}-{año}"
 
 # === LIGAS ===
 class LigaListAPIView(APIView):
@@ -118,3 +122,29 @@ def equipos_por_liga(request, liga_id):
         return Response(data, status=status.HTTP_200_OK)
     except Liga.DoesNotExist:
         return Response({'error': 'Liga no encontrada'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['GET'])
+def equipos_por_liga_y_temporada(request, liga_id):
+    hoy = datetime.today()
+    temporada_actual = obtener_temporada(hoy)
+
+    # Filtra partidos de esa liga
+    partidos = Partido.objects.filter(liga_id=liga_id).select_related('equipo_local', 'equipo_visitante')
+
+    equipos_ids = set()
+
+    for partido in partidos:
+        temporada = obtener_temporada(partido.fecha)
+        if temporada == temporada_actual:
+            if partido.equipo_local:
+                equipos_ids.add(partido.equipo_local.id)
+            if partido.equipo_visitante:
+                equipos_ids.add(partido.equipo_visitante.id)
+
+    # Obtiene los equipos válidos y sus rachas
+    equipos = Equipo.objects.filter(id__in=equipos_ids).prefetch_related('rachas')
+
+    data = [{"equipo": equipo.nombre} for equipo in equipos]
+
+    return Response(data, status=status.HTTP_200_OK)

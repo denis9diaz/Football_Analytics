@@ -58,10 +58,14 @@ class FavoritoSerializer(serializers.ModelSerializer):
 
 class RachaEquipoSerializer(serializers.ModelSerializer):
     liga_id = serializers.IntegerField(source='liga.id', read_only=True)
+    temporada = serializers.SerializerMethodField()
+
+    def get_temporada(self, obj):
+        return obj.temporada or "" 
 
     class Meta:
         model = RachaEquipo
-        fields = ['condicion', 'contexto', 'cantidad', 'tipo', 'liga_id']
+        fields = ['condicion', 'contexto', 'cantidad', 'tipo', 'liga_id', 'temporada']
 
 class EquipoSerializer(serializers.ModelSerializer):
     rachas_actuales = serializers.SerializerMethodField()

@@ -7,6 +7,7 @@ from .views import (
     FavoritoDeleteView,
     ranking_partidos_analizados,
     equipos_por_liga,
+    equipos_por_liga_y_temporada,
 )
 
 urlpatterns = [
@@ -17,4 +18,5 @@ urlpatterns = [
     path('favoritos/<int:id>/', FavoritoDeleteView.as_view(), name='favoritos-delete'),
     path('ranking-partidos-analizados/', ranking_partidos_analizados, name='ranking-partidos'),
     path('ligas/<int:liga_id>/equipos/', equipos_por_liga, name='equipos-por-liga'),
+    path('ligas/<int:liga_id>/equipos-temporada/', equipos_por_liga_y_temporada),
 ]
