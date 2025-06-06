@@ -187,11 +187,11 @@ export default function Favoritos() {
                         </div>
 
                         <div className="overflow-x-auto border border-gray-200 rounded-b bg-[#fefefe]">
-                          <table className="min-w-[650px] w-full text-sm text-left table-fixed">
+                          <table className="min-w-[600px] w-full text-sm text-left">
                             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                               <tr>
                                 <th className="px-4 py-2 w-[70px]">Hora</th>
-                                <th className="px-4 py-2 min-w-[210px]">
+                                <th className="px-4 py-2 min-w-[230px] sm:min-w-[210px]">
                                   Partido
                                 </th>
                                 <th className="px-4 py-2 w-[110px]">
@@ -224,7 +224,7 @@ export default function Favoritos() {
                                         { locale: es }
                                       )}
                                     </td>
-                                    <td className="px-4 py-2 font-medium text-gray-800">
+                                    <td className="px-4 py-2 font-medium text-gray-800 whitespace-nowrap">
                                       <span
                                         className={
                                           p.equipo_destacado === "local"

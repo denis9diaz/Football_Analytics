@@ -466,7 +466,7 @@ export default function Analisis() {
 
                     {partidosLiga.length > 0 ? (
                       <div className="overflow-x-auto border border-gray-200 rounded-b bg-[#fefefe]">
-                        <table className="min-w-[650px] w-full text-sm text-left table-fixed">
+                        <table className="min-w-[650px] w-full text-sm text-left">
                           <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
                             <tr>
                               <th
@@ -490,7 +490,7 @@ export default function Analisis() {
                                   </span>
                                 </div>
                               </th>
-                              <th className="px-4 py-2 min-w-[210px]">
+                              <th className="px-4 py-2 min-w-[260px] sm:min-w-[210px]">
                                 Partido
                               </th>
 
