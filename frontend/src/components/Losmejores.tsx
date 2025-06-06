@@ -165,7 +165,7 @@ export default function LosMejores() {
                           : ranking}
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-md font-semibold text-gray-800">
+                        <h3 className="text-md-1 font-semibold text-gray-800">
                           <span
                             className={
                               p.equipo_destacado === "local"
@@ -195,8 +195,8 @@ export default function LosMejores() {
                       </div>
                     </div>
 
-                    <div className="mt-3 flex justify-between items-center">
-                      <div className="text-blue-600 font-bold text-lg">
+                    <div className="mt-3 ms-3 flex justify-between items-center">
+                      <div className="text-blue-600 font-bold text-xl">
                         {prob ? `${prob.toFixed(1)}%` : "-"}
                       </div>
                       <div className="text-gray-800 font-medium text-base">
@@ -215,7 +215,7 @@ export default function LosMejores() {
                       </div>
 
                       <div
-                        className="text-md font-bold"
+                        className="text-lg font-bold me-3"
                         style={{
                           color: valor >= 0 ? "#16a34a" : "#dc2626",
                         }}
