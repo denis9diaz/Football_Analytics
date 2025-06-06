@@ -14,6 +14,7 @@ type Liga = {
   codigo_pais: string;
   pais?: string;
   codigo_iso_pais?: string;
+  nivel?: number | null;
 };
 
 type PartidoAnalizado = {
@@ -262,6 +263,19 @@ export default function Analisis() {
     localStorage.setItem("avisoCuotasOcultoHasta", mañana.toISOString());
   };
 
+  const sortedLigas = ligas
+  .filter((liga) => ligaFiltrada === null || liga.id === ligaFiltrada)
+  .sort((a, b) => {
+    const paisA = (a.pais || a.codigo_pais || "").trim().toLowerCase();
+    const paisB = (b.pais || b.codigo_pais || "").trim().toLowerCase();
+    const comparePais = paisA.localeCompare(paisB);
+    if (comparePais !== 0) return comparePais;
+
+    const nivelA = a.nivel ?? 99;
+    const nivelB = b.nivel ?? 99;
+    return nivelA - nivelB;
+  });
+
   return (
     <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-15">
       <MetodosSidebar
@@ -356,10 +370,7 @@ export default function Analisis() {
                 )}
               </div>
             </div>
-            {ligas
-              .filter(
-                (liga) => ligaFiltrada === null || liga.id === ligaFiltrada
-              )
+            {sortedLigas
               .sort((a, b) =>
                 (a.pais || a.codigo_pais).localeCompare(b.pais || b.codigo_pais)
               )
