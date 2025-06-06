@@ -514,12 +514,12 @@ export default function Analisis() {
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[110px] cursor-pointer select-none"
+                                className="px-4 py-2 w-[140px] cursor-pointer select-none"
                                 onClick={() => handleOrden("cuota_estim_real")}
                                 title="Cuota estimada según Fútbol Analytics."
                               >
                                 <div className="flex items-center gap-1">
-                                  @Estimada
+                                  Cuota estimada
                                   <span
                                     className={
                                       ordenCampo === "cuota_estim_real"
@@ -537,10 +537,10 @@ export default function Analisis() {
                               </th>
 
                               <th
-                                className="px-4 py-2 w-[105px] select-none"
+                                className="px-4 py-2 w-[120px] select-none"
                                 title="Cuota en las casas de apuestas"
                               >
-                                @Bookies
+                                Cuota bookies
                               </th>
 
                               <th
@@ -593,17 +593,17 @@ export default function Analisis() {
                                   <span
                                     className={
                                       p.equipo_destacado === "local"
-                                        ? "font-bold"
+                                        ? "font-bold text-[15px]"
                                         : ""
                                     }
                                   >
                                     {p.partido.equipo_local}
-                                  </span>{" "}
+                                  </span>
                                   -{" "}
                                   <span
                                     className={
                                       p.equipo_destacado === "visitante"
-                                        ? "font-bold"
+                                        ? "font-bold text-[15px]"
                                         : ""
                                     }
                                   >

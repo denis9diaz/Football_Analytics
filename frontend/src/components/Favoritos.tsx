@@ -173,11 +173,11 @@ export default function Favoritos() {
                                 <th className="px-4 py-2 w-[110px]">
                                   Probabilidad
                                 </th>
-                                <th className="px-4 py-2 w-[95px]">
-                                  @Estimada
+                                <th className="px-4 py-2 w-[124px]">
+                                  Cuota estimada
                                 </th>
-                                <th className="px-4 py-2 w-[98px]">
-                                  @Bookies
+                                <th className="px-4 py-2 w-[120px]">
+                                  Cuota bookies
                                 </th>
                                 <th className="px-4 py-2 w-[95px]">% Valor</th>
                                 <th className="px-2 py-2 w-[40px] text-center">
