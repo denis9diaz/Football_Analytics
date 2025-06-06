@@ -21,7 +21,7 @@ const CONDICION_LABELS: Record<string, string> = {
   over_1_5_recibidos: "Over 1.5 Home",
   over_1_5: "Over 1.5",
   over_2_5: "Over 2.5",
-  ganar: "Home To Win",
+  ganar: "Home Win",
   perder: "Away Lose",
 };
 
@@ -46,11 +46,13 @@ const Equipos: React.FC = () => {
   const [contextoSeleccionado, setContextoSeleccionado] =
     useState<string>("local");
   const [nombreLiga, setNombreLiga] = useState<string>("");
+  const [todosLosEquipos, setTodosLosEquipos] = useState<EquipoData[]>([]);
 
   const cargarEquipos = () => {
     const params = new URLSearchParams(window.location.search);
     const ligaId = params.get("ligaId");
     const ligaNombre = params.get("ligaNombre");
+
     if (ligaNombre) {
       setNombreLiga(decodeURIComponent(ligaNombre));
     }
@@ -71,30 +73,36 @@ const Equipos: React.FC = () => {
 
         const data = await response.json();
 
-        const filtrados: EquipoData[] = data.map((equipo: EquipoData) => {
-          const actuales = equipo.rachas_actuales.filter(
-            (r) => r.liga_id?.toString() === ligaId
-          );
-          const historicas = equipo.rachas_historicas.filter(
-            (r) => r.liga_id?.toString() === ligaId
-          );
+        const filtrados: EquipoData[] = data
+          .map((equipo: EquipoData) => {
+            const actuales = equipo.rachas_actuales.filter(
+              (r) => r.liga_id?.toString() === ligaId
+            );
+            const historicas = equipo.rachas_historicas.filter(
+              (r) => r.liga_id?.toString() === ligaId
+            );
 
-          const clavesActuales = new Set(
-            actuales.map((r) => `${r.condicion}-${r.contexto}`)
-          );
+            const clavesActuales = new Set(
+              actuales.map((r) => `${r.condicion}-${r.contexto}`)
+            );
 
-          const historicasFiltradas = historicas.filter((r) =>
-            clavesActuales.has(`${r.condicion}-${r.contexto}`)
-          );
+            const historicasFiltradas = historicas.filter((r) =>
+              clavesActuales.has(`${r.condicion}-${r.contexto}`)
+            );
 
-          return {
-            equipo: equipo.equipo,
-            rachas_actuales: actuales,
-            rachas_historicas: historicasFiltradas,
-          };
-        });
+            return {
+              equipo: equipo.equipo,
+              rachas_actuales: actuales,
+              rachas_historicas: historicasFiltradas,
+            };
+          })
+          .filter((e: EquipoData) => e.rachas_actuales.length > 0)
+          .sort((a: EquipoData, b: EquipoData) =>
+            a.equipo.localeCompare(b.equipo)
+          );
 
         setEquipos(filtrados);
+        setTodosLosEquipos(filtrados);
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -151,21 +159,22 @@ const Equipos: React.FC = () => {
         ))}
 
         <select
-          className="ml-4 px-4 py-2 rounded text-sm border cursor-pointer bg-gray-200 text-gray-700"
+          className="ml-4 px-4 py-2 rounded text-sm border cursor-pointer bg-gray-100 text-gray-900"
           onChange={(e) => {
             const selectedTeam = e.target.value;
             if (selectedTeam === "") {
-              cargarEquipos(); // Reload all teams
+              setEquipos(todosLosEquipos); // mostrar todos
             } else {
-              setEquipos((prev) => {
-                const allTeams = equipos;
-                return allTeams.filter((equipo) => equipo.equipo === selectedTeam);
-              });
+              setEquipos(
+                todosLosEquipos.filter(
+                  (equipo) => equipo.equipo === selectedTeam
+                )
+              );
             }
           }}
         >
           <option value="">Todos los equipos</option>
-          {equipos.map((equipo) => (
+          {todosLosEquipos.map((equipo) => (
             <option key={equipo.equipo} value={equipo.equipo}>
               {equipo.equipo}
             </option>
@@ -179,19 +188,19 @@ const Equipos: React.FC = () => {
         <p className="text-red-500">Error: {error}</p>
       ) : (
         <div className="overflow-x-auto">
-          <table className="min-w-[400px] w-full text-sm text-left border border-gray-200 rounded bg-[#fefefe]">
-            <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
+          <table className="min-w-[200px] w-full text-base text-left border border-gray-300 rounded bg-[#fefefe]">
+            <thead className="text-sm text-gray-500 bg-gray-50 border-b border-gray-300">
               <tr>
-                <th className="px-2 py-2 w-[120px] border-r border-gray-200">
+                <th className="px-2 py-1 w-[110px] border-r border-gray-300 text-center">
                   Equipo
                 </th>
-                <th className="px-2 py-2 w-[150px] border-r border-gray-200">
+                <th className="px-2 py-1 w-[120px] border-r border-gray-300 text-center">
                   Racha
                 </th>
-                <th className="px-2 py-2 w-[50px] text-center border-r border-gray-200">
+                <th className="px-2 py-1 w-[80px] text-center border-r border-gray-300">
                   Actual
                 </th>
-                <th className="px-2 py-2 w-[50px] text-center">Histórica</th>
+                <th className="px-2 py-1 w-[80px] text-center">Histórica</th>
               </tr>
             </thead>
             <tbody>
@@ -218,25 +227,25 @@ const Equipos: React.FC = () => {
                 return rachasFiltradas.map((r, i) => (
                   <tr
                     key={`${idx}-${i}`}
-                    className={`border-b border-gray-200 last:border-b-0 transition-colors ${
+                    className={`border-b border-gray-300 last:border-b-0 transition-colors ${
                       i === 0 ? "" : "hover:bg-gray-100"
                     }`}
                   >
                     {i === 0 ? (
                       <td
-                        className="px-2 py-2 font-medium text-gray-800 whitespace-nowrap bg-white hover:bg-gray-50 border-r border-gray-200"
+                        className="px-4 py-2 text-gray-900 whitespace-nowrap bg-white hover:bg-gray-50 border-r border-gray-300 text-center font-semibold text-xl"
                         rowSpan={rachasFiltradas.length}
                       >
                         {equipo.equipo}
                       </td>
                     ) : null}
-                    <td className="px-2 py-2 text-gray-700 hover:bg-gray-50 border-r border-gray-200">
+                    <td className="px-3 py-2 text-gray-700 hover:bg-gray-50 border-r border-gray-300">
                       {CONDICION_LABELS[r!.condicion] || r!.condicion}
                     </td>
-                    <td className="px-2 py-2 text-center text-gray-700 hover:bg-gray-50 border-r border-gray-200">
+                    <td className="px-3 py-2 text-center text-gray-700 hover:bg-gray-50 border-r border-gray-300">
                       {r!.actual}
                     </td>
-                    <td className="px-2 py-2 text-center text-gray-700 hover:bg-gray-50">
+                    <td className="px-3 py-2 text-center text-gray-700 hover:bg-gray-50">
                       {r!.historica}
                     </td>
                   </tr>

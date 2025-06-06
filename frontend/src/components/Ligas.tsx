@@ -75,7 +75,12 @@ const Ligas: React.FC = () => {
   return (
     <div className="min-h-screen py-8 mt-8">
       <div className="max-w-3xl mx-auto">
-        <h1 className="text-2xl font-bold text-gray-800 mb-6">Ligas</h1>
+        <div className="flex items-center mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-1">Ligas</h1>
+          <h2 className="text-lg text-gray-600 ms-3">
+            (Selecciona una liga para ver los equipos y sus rachas)
+          </h2>
+        </div>
 
         {error ? (
           <p className="text-red-500">Error: {error}</p>
