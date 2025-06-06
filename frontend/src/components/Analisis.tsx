@@ -302,7 +302,7 @@ export default function Analisis() {
           <>
             <div className="flex justify-between items-center mb-4">
               <div className="text-sm font-medium text-gray-700">
-                <div className="ml-2 w-[300px]">
+                <div className="ml-0 w-full lg:w-[320px] xl:w-[400px]">
                   <Select
                     options={[
                       {
@@ -374,6 +374,11 @@ export default function Analisis() {
                         ...base,
                         cursor: "pointer",
                         minHeight: 38,
+                        width: "100%", // Asegura que el control ocupe todo el ancho disponible
+                      }),
+                      container: (base) => ({
+                        ...base,
+                        width: "100%", // Muy importante para que el contenedor escale
                       }),
                       option: (base) => ({ ...base, cursor: "pointer" }),
                       menu: (base) => ({ ...base, zIndex: 50 }),

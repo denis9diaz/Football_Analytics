@@ -11,6 +11,9 @@ type Liga = {
   id: number;
   nombre: string;
   codigo_pais: string;
+  pais?: string;
+  codigo_iso_pais?: string;
+  nivel?: number | null;
 };
 
 type PartidoAnalizado = {
@@ -153,15 +156,36 @@ export default function Favoritos() {
                   {metodo}
                 </h2>
 
-                {Object.entries(favoritosPorLiga).map(
-                  ([ligaId, favoritosLiga]) => {
+                {Object.entries(favoritosPorLiga)
+                  .sort(([, a], [, b]) => {
+                    const ligaA = a[0].partido_analisis.partido.liga;
+                    const ligaB = b[0].partido_analisis.partido.liga;
+                    const paisA = (ligaA.pais || "").toLowerCase();
+                    const paisB = (ligaB.pais || "").toLowerCase();
+                    const comparePais = paisA.localeCompare(paisB);
+                    if (comparePais !== 0) return comparePais;
+                    return ligaA.nombre.localeCompare(ligaB.nombre);
+                  })
+                  .map(([ligaId, favoritosLiga]) => {
                     const liga = favoritosLiga[0].partido_analisis.partido.liga;
 
                     return (
                       <div key={ligaId} className="mb-4">
-                        <div className="flex items-center justify-between px-4 py-2 bg-blue-100 text-sm font-semibold text-blue-900 uppercase rounded-t">
-                          {liga.nombre}
+                        <div className="flex items-center gap-2 px-4 py-2 bg-blue-100 text-sm font-semibold text-gray-800 rounded-t">
+                          <img
+                            src={`https://flagcdn.com/w20/${(
+                              liga.codigo_iso_pais || ""
+                            ).toLowerCase()}.png`}
+                            alt={liga.codigo_pais}
+                            className="w-5 h-[14px] object-cover"
+                          />
+                          <span>
+                            {(liga.pais || "").toUpperCase()} -{" "}
+                            {liga.nombre.charAt(0).toUpperCase() +
+                              liga.nombre.slice(1).toLowerCase()}
+                          </span>
                         </div>
+
                         <div className="overflow-x-auto border border-gray-200 rounded-b bg-[#fefefe]">
                           <table className="min-w-[650px] w-full text-sm text-left table-fixed">
                             <thead className="text-xs text-gray-500 bg-gray-50 border-b border-gray-200">
@@ -272,8 +296,7 @@ export default function Favoritos() {
                         </div>
                       </div>
                     );
-                  }
-                )}
+                  })}
               </div>
             );
           })
