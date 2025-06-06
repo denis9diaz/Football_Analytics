@@ -9,7 +9,7 @@ interface Liga {
   nivel?: number | null;
 }
 
-const Banderas: React.FC = () => {
+const Ligas: React.FC = () => {
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -99,4 +99,4 @@ const Banderas: React.FC = () => {
   );
 };
 
-export default Banderas;
+export default Ligas;
