@@ -261,18 +261,16 @@ export default function Analisis() {
     localStorage.setItem("avisoCuotasOcultoHasta", mañana.toISOString());
   };
 
-  const sortedLigas = ligas
-    .filter((liga) => ligaFiltrada === null || liga.id === ligaFiltrada)
-    .sort((a, b) => {
-      const paisA = (a.pais || a.codigo_pais || "").trim().toLowerCase();
-      const paisB = (b.pais || b.codigo_pais || "").trim().toLowerCase();
-      const comparePais = paisA.localeCompare(paisB);
-      if (comparePais !== 0) return comparePais;
+  const sortedLigas = [...ligas].sort((a, b) => {
+    const paisA = (a.pais || a.codigo_pais || "").trim().toLowerCase();
+    const paisB = (b.pais || b.codigo_pais || "").trim().toLowerCase();
+    const comparePais = paisA.localeCompare(paisB);
+    if (comparePais !== 0) return comparePais;
 
-      const nivelA = a.nivel ?? 99;
-      const nivelB = b.nivel ?? 99;
-      return nivelA - nivelB;
-    });
+    const nivelA = a.nivel ?? 99;
+    const nivelB = b.nivel ?? 99;
+    return nivelA - nivelB;
+  });
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-15">
@@ -430,6 +428,9 @@ export default function Analisis() {
               </div>
             </div>
             {sortedLigas
+              .filter(
+                (liga) => ligaFiltrada === null || liga.id === ligaFiltrada
+              )
               .sort((a, b) =>
                 (a.pais || a.codigo_pais).localeCompare(b.pais || b.codigo_pais)
               )
