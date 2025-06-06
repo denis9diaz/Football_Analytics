@@ -89,11 +89,20 @@ export default function Analisis() {
 
         setPartidos(duplicados);
 
+        const partidosFechaSeleccionada = duplicados.filter(
+          (p) =>
+            p.partido.fecha.slice(0, 10) ===
+            fechaSeleccionada.toISOString().slice(0, 10)
+        );
+
         const ligasUnicas = Array.from(
-          new Set<string>(data.map((p) => JSON.stringify(p.partido.liga)))
+          new Set<string>(
+            partidosFechaSeleccionada.map((p) => JSON.stringify(p.partido.liga))
+          )
         ).map((ligaJson) => JSON.parse(ligaJson) as Liga);
 
         setLigas(ligasUnicas);
+
         setLigaFiltrada(null);
 
         setIsCargando(false);
@@ -102,7 +111,7 @@ export default function Analisis() {
         console.error("Error al cargar análisis:", err);
         setIsCargando(false);
       });
-  }, [metodoSeleccionado]);
+  }, [metodoSeleccionado, fechaSeleccionada]);
 
   const partidosFiltradosPorFecha = partidos.filter(
     (p) =>
