@@ -4,7 +4,7 @@ from .models import Liga, Partido, PartidoAnalisis, Favorito
 class LigaSerializer(serializers.ModelSerializer):
     class Meta:
         model = Liga
-        fields = ['id', 'nombre', 'codigo_pais']
+        fields = ['id', 'nombre', 'codigo_pais', 'pais', 'codigo_iso_pais', 'codigo_api']
 
 class PartidoSerializer(serializers.ModelSerializer):
     equipo_local = serializers.StringRelatedField()
