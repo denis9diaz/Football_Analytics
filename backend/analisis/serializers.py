@@ -2,9 +2,14 @@ from rest_framework import serializers
 from .models import Liga, Partido, PartidoAnalisis, Favorito
 
 class LigaSerializer(serializers.ModelSerializer):
+    nivel = serializers.SerializerMethodField()
+
+    def get_nivel(self, obj):
+        return obj.nivel if obj.nivel is not None else 99
+
     class Meta:
         model = Liga
-        fields = ['id', 'nombre', 'codigo_pais', 'pais', 'codigo_iso_pais', 'codigo_api']
+        fields = ['id', 'nombre', 'codigo_pais', 'pais', 'codigo_iso_pais', 'codigo_api', 'nivel']
 
 class PartidoSerializer(serializers.ModelSerializer):
     equipo_local = serializers.StringRelatedField()

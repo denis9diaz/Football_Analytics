@@ -11,6 +11,7 @@ class Liga(models.Model):
     pais = models.CharField(max_length=50, null=True, blank=True)  # 🆕 nombre del país en español
     codigo_iso_pais = models.CharField(max_length=15, null=True, blank=True)  # 🆕 para la bandera
     codigo_api = models.CharField(max_length=20, unique=True, null=True, blank=True)
+    nivel = models.IntegerField(null=True, blank=True)  # Nivel de división (1 = máxima)
 
     def __str__(self):
         return f"{self.nombre} ({self.pais or self.codigo_pais})"
