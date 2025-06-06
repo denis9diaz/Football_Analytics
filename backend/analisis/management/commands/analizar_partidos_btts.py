@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
-from analisis.utils.api import fetch_cuota_casa
+from analisis.utils.api_odds import fetch_cuota_casa
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método BTTS (Both Teams To Score)'

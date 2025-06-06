@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from django.db.models import Q
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
 from random import uniform
-from analisis.utils.api import fetch_cuota_casa  # << IMPORTANTE
+from analisis.utils.api_odds import fetch_cuota_casa  # << IMPORTANTE
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método Over 0.5 HT'

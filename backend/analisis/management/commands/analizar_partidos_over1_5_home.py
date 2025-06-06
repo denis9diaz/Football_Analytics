@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
-from analisis.utils.api import fetch_cuota_casa  # Usa la nueva versión tolerante
+from analisis.utils.api_odds import fetch_cuota_casa  # Usa la nueva versión tolerante
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método Over 1.5 Home (local marca 2 o más goles)'

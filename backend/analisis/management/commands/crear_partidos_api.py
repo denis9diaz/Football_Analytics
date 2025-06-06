@@ -1,13 +1,13 @@
 from django.core.management.base import BaseCommand
-from analisis.utils.api import fetch_fixtures
+from analisis.utils.api_fixtures import fetch_fixtures
 from analisis.models import Liga, Equipo, Partido
 from django.utils.dateparse import parse_datetime
 
 LIGAS = {
-    1087: "Ykkösliiga",
+    179: "Premier League ESC",
 }
 
-TEMPORADAS = ["2023", "2024", "2025"]
+TEMPORADAS = ["2022", "2023", "2024"]
 
 class Command(BaseCommand):
     help = 'Importa partidos reales desde la API de API-Football'

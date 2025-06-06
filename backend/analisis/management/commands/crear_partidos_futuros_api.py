@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from analisis.utils.api import fetch_fixtures_futuros
+from analisis.utils.api_fixtures_futures import fetch_fixtures_futuros
 from analisis.models import Liga, Equipo, Partido
 from django.utils.dateparse import parse_datetime
 

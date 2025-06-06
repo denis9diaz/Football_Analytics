@@ -3,7 +3,7 @@ from django.utils.timezone import now
 from random import uniform
 from django.db.models import Q
 from analisis.models import Partido, PartidoAnalisis, MetodoAnalisis
-from analisis.utils.api import fetch_cuota_casa
+from analisis.utils.api_odds import fetch_cuota_casa
 
 class Command(BaseCommand):
     help = 'Analiza partidos del día para el método TTS (Team To Score)'
