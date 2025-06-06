@@ -91,3 +91,30 @@ class FavoritoDeleteView(generics.DestroyAPIView):
 
     def get_queryset(self):
         return Favorito.objects.filter(usuario=self.request.user)
+
+        
+# === EQUIPOS POR LIGA ===
+@api_view(['GET'])
+def equipos_por_liga(request, liga_id):
+    try:
+        liga = Liga.objects.get(id=liga_id)
+        equipos = liga.equipos.prefetch_related('rachas')
+
+        data = []
+        for equipo in equipos:
+            rachas_actuales = equipo.rachas.filter(tipo='actual').values(
+                'condicion', 'contexto', 'cantidad', 'liga_id'
+            )
+            rachas_historicas = equipo.rachas.filter(tipo='historica').values(
+                'condicion', 'contexto', 'cantidad', 'liga_id'
+            )
+
+            data.append({
+                'equipo': equipo.nombre,
+                'rachas_actuales': list(rachas_actuales),
+                'rachas_historicas': list(rachas_historicas),
+            })
+
+        return Response(data, status=status.HTTP_200_OK)
+    except Liga.DoesNotExist:
+        return Response({'error': 'Liga no encontrada'}, status=status.HTTP_404_NOT_FOUND)

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Liga, Partido, PartidoAnalisis, Favorito
+from .models import Liga, Partido, PartidoAnalisis, Favorito, RachaEquipo, Equipo
 
 class LigaSerializer(serializers.ModelSerializer):
     nivel = serializers.SerializerMethodField()
@@ -55,3 +55,26 @@ class FavoritoSerializer(serializers.ModelSerializer):
     class Meta:
         model = Favorito
         fields = ['id', 'partido_analisis', 'partido_analisis_id']
+
+class RachaEquipoSerializer(serializers.ModelSerializer):
+    liga_id = serializers.IntegerField(source='liga.id', read_only=True)
+
+    class Meta:
+        model = RachaEquipo
+        fields = ['condicion', 'contexto', 'cantidad', 'tipo', 'liga_id']
+
+class EquipoSerializer(serializers.ModelSerializer):
+    rachas_actuales = serializers.SerializerMethodField()
+    rachas_historicas = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Equipo
+        fields = ['nombre', 'rachas_actuales', 'rachas_historicas']
+
+    def get_rachas_actuales(self, obj):
+        queryset = obj.rachas.filter(tipo='actual')
+        return RachaEquipoSerializer(queryset, many=True).data
+
+    def get_rachas_historicas(self, obj):
+        queryset = obj.rachas.filter(tipo='historica')
+        return RachaEquipoSerializer(queryset, many=True).data
