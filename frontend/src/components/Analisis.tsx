@@ -5,6 +5,7 @@ import { format, addDays, subDays, isSameDay, parseISO } from "date-fns";
 import { es } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
+import Select from "react-select";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -69,73 +70,70 @@ export default function Analisis() {
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
 
   useEffect(() => {
-  if (!metodoSeleccionado) {
-    setIsCargando(false);
-    return;
-  }
-
-  setIsCargando(true); // 🔹 Activa el estado de carga antes de comenzar
-
-  fetchWithAuth(`${API_URL}/api/favoritos/`)
-    .then((res) => res.json())
-    .then((data: Favorito[]) => {
-      if (Array.isArray(data)) {
-        setFavoritos(data);
-      } else {
-        console.error("La respuesta de favoritos no es un array:", data);
-        setFavoritos([]);
-      }
-    })
-    .catch((err) => {
-      console.error("Error al cargar favoritos:", err);
-      setFavoritos([]);
-    });
-
-  fetch(
-    `${API_URL}/api/partidos-analisis/${encodeURIComponent(
-      metodoSeleccionado
-    )}/`
-  )
-    .then((res) => res.json())
-    .then((data: PartidoAnalizado[]) => {
-      const duplicados =
-        metodoSeleccionado === "TTS"
-          ? data.flatMap((p) => {
-              if (!p.equipo_destacado) return [];
-              return [p];
-            })
-          : data;
-
-      setPartidos(duplicados);
-
-      const partidosFechaSeleccionada = duplicados.filter(
-        (p) =>
-          p.partido.fecha.slice(0, 10) ===
-          fechaSeleccionada.toISOString().slice(0, 10)
-      );
-
-      const ligasUnicas = Array.from(
-        new Set<string>(
-          partidosFechaSeleccionada.map((p) =>
-            JSON.stringify(p.partido.liga)
-          )
-        )
-      ).map((ligaJson) => JSON.parse(ligaJson) as Liga);
-
-      setLigas(ligasUnicas);
-      setLigaFiltrada(null);
-
-      // 🔹 Evita render intermedio antes de completar
-      setTimeout(() => {
-        setIsCargando(false);
-      }, 0);
-    })
-    .catch((err) => {
-      console.error("Error al cargar análisis:", err);
+    if (!metodoSeleccionado) {
       setIsCargando(false);
-    });
-}, [metodoSeleccionado, fechaSeleccionada]);
+      return;
+    }
 
+    setIsCargando(true); // 🔹 Activa el estado de carga antes de comenzar
+
+    fetchWithAuth(`${API_URL}/api/favoritos/`)
+      .then((res) => res.json())
+      .then((data: Favorito[]) => {
+        if (Array.isArray(data)) {
+          setFavoritos(data);
+        } else {
+          console.error("La respuesta de favoritos no es un array:", data);
+          setFavoritos([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error al cargar favoritos:", err);
+        setFavoritos([]);
+      });
+
+    fetch(
+      `${API_URL}/api/partidos-analisis/${encodeURIComponent(
+        metodoSeleccionado
+      )}/`
+    )
+      .then((res) => res.json())
+      .then((data: PartidoAnalizado[]) => {
+        const duplicados =
+          metodoSeleccionado === "TTS"
+            ? data.flatMap((p) => {
+                if (!p.equipo_destacado) return [];
+                return [p];
+              })
+            : data;
+
+        setPartidos(duplicados);
+
+        const partidosFechaSeleccionada = duplicados.filter(
+          (p) =>
+            p.partido.fecha.slice(0, 10) ===
+            fechaSeleccionada.toISOString().slice(0, 10)
+        );
+
+        const ligasUnicas = Array.from(
+          new Set<string>(
+            partidosFechaSeleccionada.map((p) => JSON.stringify(p.partido.liga))
+          )
+        ).map((ligaJson) => JSON.parse(ligaJson) as Liga);
+
+        setLigas(ligasUnicas);
+        setLigaFiltrada(null);
+
+        // 🔹 Evita render intermedio antes de completar
+        setTimeout(() => {
+          setIsCargando(false);
+        }, 0);
+      })
+      .catch((err) => {
+        console.error("Error al cargar análisis:", err);
+        setIsCargando(false);
+      });
+  }, [metodoSeleccionado, fechaSeleccionada]);
 
   const partidosFiltradosPorFecha = partidos.filter(
     (p) =>
@@ -264,17 +262,17 @@ export default function Analisis() {
   };
 
   const sortedLigas = ligas
-  .filter((liga) => ligaFiltrada === null || liga.id === ligaFiltrada)
-  .sort((a, b) => {
-    const paisA = (a.pais || a.codigo_pais || "").trim().toLowerCase();
-    const paisB = (b.pais || b.codigo_pais || "").trim().toLowerCase();
-    const comparePais = paisA.localeCompare(paisB);
-    if (comparePais !== 0) return comparePais;
+    .filter((liga) => ligaFiltrada === null || liga.id === ligaFiltrada)
+    .sort((a, b) => {
+      const paisA = (a.pais || a.codigo_pais || "").trim().toLowerCase();
+      const paisB = (b.pais || b.codigo_pais || "").trim().toLowerCase();
+      const comparePais = paisA.localeCompare(paisB);
+      if (comparePais !== 0) return comparePais;
 
-    const nivelA = a.nivel ?? 99;
-    const nivelB = b.nivel ?? 99;
-    return nivelA - nivelB;
-  });
+      const nivelA = a.nivel ?? 99;
+      const nivelB = b.nivel ?? 99;
+      return nivelA - nivelB;
+    });
 
   return (
     <div className="flex flex-col lg:flex-row gap-8 bg-white min-h-screen pt-15">
@@ -306,23 +304,84 @@ export default function Analisis() {
           <>
             <div className="flex justify-between items-center mb-4">
               <div className="text-sm font-medium text-gray-700">
-                Filtrar por liga
-                <select
-                  className="ml-2 border border-gray-300 rounded-lg px-2 py-1 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 cursor-pointer"
-                  value={ligaFiltrada ?? ""}
-                  onChange={(e) =>
-                    setLigaFiltrada(
-                      e.target.value ? Number(e.target.value) : null
-                    )
-                  }
-                >
-                  <option value="">Todas</option>
-                  {ligas.map((l) => (
-                    <option key={l.id} value={l.id}>
-                      {l.nombre}
-                    </option>
-                  ))}
-                </select>
+                <div className="ml-2 w-[300px]">
+                  <Select
+                    options={[
+                      {
+                        value: null,
+                        label: "Todas las ligas",
+                      },
+                      ...sortedLigas.map((liga) => ({
+                        value: liga.id,
+                        label: (
+                          <div className="flex items-center gap-2">
+                            <img
+                              src={`https://flagcdn.com/w20/${(
+                                liga.codigo_iso_pais || liga.codigo_pais
+                              ).toLowerCase()}.png`}
+                              alt={liga.nombre}
+                              className="inline"
+                              width={20}
+                              height={14}
+                            />
+                            <span>
+                              {(liga.pais || liga.codigo_pais).toUpperCase()} -{" "}
+                              {capitalize(liga.nombre)}
+                            </span>
+                          </div>
+                        ),
+                      })),
+                    ]}
+                    value={
+                      ligaFiltrada === null
+                        ? {
+                            value: null,
+                            label: "Todas las ligas",
+                          }
+                        : (() => {
+                            const liga = sortedLigas.find(
+                              (l) => l.id === ligaFiltrada
+                            );
+                            if (!liga) return null;
+                            return {
+                              value: liga.id,
+                              label: (
+                                <div className="flex items-center gap-2">
+                                  <img
+                                    src={`https://flagcdn.com/w20/${(
+                                      liga.codigo_iso_pais || liga.codigo_pais
+                                    ).toLowerCase()}.png`}
+                                    alt={liga.nombre}
+                                    className="inline"
+                                    width={20}
+                                    height={14}
+                                  />
+                                  <span>
+                                    {(
+                                      liga.pais || liga.codigo_pais
+                                    ).toUpperCase()}{" "}
+                                    - {capitalize(liga.nombre)}
+                                  </span>
+                                </div>
+                              ),
+                            };
+                          })()
+                    }
+                    onChange={(selected) =>
+                      setLigaFiltrada(selected?.value ?? null)
+                    }
+                    classNamePrefix="react-select"
+                    styles={{
+                      control: (base) => ({
+                        ...base,
+                        cursor: "pointer",
+                        minHeight: 38,
+                      }),
+                      option: (base) => ({ ...base, cursor: "pointer" }),
+                      menu: (base) => ({ ...base, zIndex: 50 }),
+                    }}
+                  />
+                </div>
               </div>
               <div className="relative flex items-center gap-1 sm:gap-2">
                 <button
