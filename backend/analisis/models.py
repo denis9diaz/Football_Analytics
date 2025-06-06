@@ -11,7 +11,7 @@ class Liga(models.Model):
     codigo_api = models.CharField(max_length=20, unique=True, null=True, blank=True)
 
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre} ({self.codigo_pais})"
 
 
 class Equipo(models.Model):
@@ -55,6 +55,7 @@ class Partido(models.Model):
     gol_ht = models.BooleanField(null=True, blank=True)
     codigo_api = models.CharField(max_length=30, unique=True, null=True, blank=True)
 
+
     def save(self, *args, **kwargs):
         # Actualizar campos derivados
         if self.goles_local_ht is not None and self.goles_visitante_ht is not None:
@@ -97,20 +98,22 @@ class Partido(models.Model):
 
         if self.goles_local_ft is not None and self.goles_visitante_ft is not None:
             gano_local = self.goles_local_ft > self.goles_visitante_ft
-            for equipo, cumplido, contextos in [
-                (self.equipo_local, gano_local, ['local', 'ambos']),
-                (self.equipo_visitante, not gano_local, ['visitante', 'ambos'])
-            ]:
-                for contexto in contextos:
-                    self._actualizar_racha_equipo(equipo, contexto, cumplido, 'ganar', self.liga)
+            perdio_visitante = self.goles_visitante_ft < self.goles_local_ft
+
+            # Racha de victorias del equipo local como local
+            self._actualizar_racha_equipo(self.equipo_local, 'local', gano_local, 'ganar', self.liga)
+
+            # Racha de derrotas del equipo visitante como visitante
+            self._actualizar_racha_equipo(self.equipo_visitante, 'visitante', perdio_visitante, 'perder', self.liga)
+
 
         if self.goles_local_ft is not None:
             cumple_local = self.goles_local_ft >= 2
-            for contexto in ['local', 'ambos']:
+            for contexto in ['local']:
                 self._actualizar_racha_equipo(self.equipo_local, contexto, cumple_local, 'over_1_5_marcados', self.liga)
 
-            cumple_visitante = self.goles_visitante_ft >= 2
-            for contexto in ['visitante', 'ambos']:
+            cumple_visitante = self.goles_local_ft >= 2  # goles que recibió el visitante
+            for contexto in ['visitante']:
                 self._actualizar_racha_equipo(self.equipo_visitante, contexto, cumple_visitante, 'over_1_5_recibidos', self.liga)
 
         for condicion, valor in [('over_1_5', self.over_1_5), ('over_2_5', self.over_2_5)]:
@@ -120,6 +123,7 @@ class Partido(models.Model):
                     (self.equipo_visitante, 'ambos')
                 ]:
                     self._actualizar_racha_equipo(equipo, contexto, valor, condicion, self.liga)
+
 
     def _actualizar_racha_equipo(self, equipo, contexto, cumplido, condicion, liga):
         if equipo is None or liga is None:
@@ -149,6 +153,16 @@ class Partido(models.Model):
         if racha_actual.cantidad > racha_historica.cantidad:
             racha_historica.cantidad = racha_actual.cantidad
             racha_historica.save()
+
+
+    def __str__(self):
+        fecha_str = self.fecha.strftime("%Y-%m-%d %H:%M") if self.fecha else "Sin fecha"
+        local = self.equipo_local.nombre if self.equipo_local else "Equipo local"
+        visitante = self.equipo_visitante.nombre if self.equipo_visitante else "Equipo visitante"
+        liga_str = self.liga.nombre if self.liga else "Sin liga"
+        equipos = f"{local} vs {visitante}"
+        return f"{fecha_str} | {equipos} | {liga_str}"
+
 
 # ========================
 # 3. MÉTODOS FIJOS
@@ -182,7 +196,18 @@ class PartidoAnalisis(models.Model):
     )
 
     def __str__(self):
-        return f"{self.metodo.nombre} - {self.partido}"
+        p = self.partido
+        fecha = p.fecha.strftime("%Y-%m-%d") if p.fecha else "Sin fecha"
+        liga = p.liga.nombre if p.liga else "Sin liga"
+        equipos = f"{p.equipo_local} vs {p.equipo_visitante}"
+
+        destacado = ""
+        if self.equipo_destacado == 'local':
+            destacado = f" ⭐ {p.equipo_local}"
+        elif self.equipo_destacado == 'visitante':
+            destacado = f" ⭐ {p.equipo_visitante}"
+
+        return f"{self.metodo.nombre} | {fecha} | {liga} | {equipos}{destacado}"
 
 
 # ========================
@@ -224,7 +249,8 @@ class RachaEquipo(models.Model):
         unique_together = ('equipo', 'condicion', 'contexto', 'tipo', 'temporada', 'liga')
 
     def __str__(self):
-        return f"{self.equipo} - {self.condicion} ({self.tipo})"
+        return f"{self.equipo.nombre} | {self.condicion} | {self.contexto} | {self.tipo} | {self.liga.nombre if self.liga else 'Sin liga'}"
+
 
 
 class Favorito(models.Model):
