@@ -8,6 +8,7 @@ from .views import (
     ranking_partidos_analizados,
     equipos_por_liga,
     equipos_por_liga_y_temporada,
+    EliminarFavoritosDiaAnteriorView,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path('ranking-partidos-analizados/', ranking_partidos_analizados, name='ranking-partidos'),
     path('ligas/<int:liga_id>/equipos/', equipos_por_liga, name='equipos-por-liga'),
     path('ligas/<int:liga_id>/equipos-temporada/', equipos_por_liga_y_temporada),
+    path('favoritos/eliminar-dia-anterior/', EliminarFavoritosDiaAnteriorView.as_view(), name='eliminar_favoritos_dia_anterior'),
 ]

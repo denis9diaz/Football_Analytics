@@ -4,20 +4,8 @@ from analisis.models import Liga, Equipo, Partido
 from django.utils.dateparse import parse_datetime
 
 LIGAS = {
-    113: "Allsvenskan",
-    114: "Superettan",
-    103: "Eliteserien",
-    104: "OBOS-ligaen",
-    253: "MLS",
-    71: "Serie A Betano",
-    357: "Premier League IRL",
-    164: "Besta deild karla",
-    165: "Division 1 (ISL)",
-    328: "Meistriliiga",
-    329: "Esiliiga",
-    244: "Veikkausliiga",
-    245: "Ykkosliiga",
-    1087: "Ykkösliiga",
+    140: "La Liga",
+    141: "Segunda División",
 }
 
 TEMPORADA = "2025"

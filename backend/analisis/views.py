@@ -4,7 +4,8 @@ from rest_framework.decorators import api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework import generics
 from rest_framework import status
-from datetime import datetime
+from datetime import datetime, timedelta
+from django.utils.timezone import now
 
 from .models import Liga, Partido, PartidoAnalisis, Favorito, Equipo
 from .serializers import (
@@ -44,7 +45,6 @@ def partidos_analizados_por_metodo(request, metodo_nombre):
 # === RANKING PARTIDOS ANALIZADOS ===
 @api_view(['GET'])
 def ranking_partidos_analizados(request):
-    from django.utils.timezone import now
     hoy = now().date()
 
     partidos_por_metodo = (
@@ -97,6 +97,17 @@ class FavoritoDeleteView(generics.DestroyAPIView):
         return Favorito.objects.filter(usuario=self.request.user)
 
         
+# === ELIMINAR FAVORITOS DEL DÍA ANTERIOR ===
+class EliminarFavoritosDiaAnteriorView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        usuario = request.user
+        ayer = now().date() - timedelta(days=1)
+        Favorito.objects.filter(usuario=usuario, partido_analisis__partido__fecha__date=ayer).delete()
+        return Response({"message": "Favoritos del día anterior eliminados."}, status=status.HTTP_200_OK)
+
+
 # === EQUIPOS POR LIGA ===
 @api_view(['GET'])
 def equipos_por_liga(request, liga_id):
