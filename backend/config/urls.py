@@ -9,4 +9,5 @@ urlpatterns = [
     path('api/', include('analisis.urls')),
     path('api/auth/', include('customauth.urls')),
     path('token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('api/suscripcion/', include('suscripciones.urls')),
 ]

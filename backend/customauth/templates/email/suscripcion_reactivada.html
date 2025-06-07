@@ -1,0 +1,17 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+  <div style="text-align: center;">
+    <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1748962059/logo_q16sbd.png" alt="Fútbol Analytics" style="height: 60px; margin-bottom: 20px;" />
+  </div>
+
+  <h2 style="color: #2B7FFF;">¡Tu suscripción ha sido reactivada!</h2>
+
+  <p style="font-size: 16px; color: #333;">
+    Has reactivado tu plan correctamente. Volverás a disfrutar de todas las funcionalidades de <strong>Fútbol Analytics</strong>.
+  </p>
+
+  <p style="font-size: 16px; color: #333;">
+    La suscripción se renovará automáticamente el día <strong>{{ fecha_fin }}</strong>.
+  </p>
+{% endblock %}

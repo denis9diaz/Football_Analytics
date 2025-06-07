@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'analisis',
     'customauth',
+    'suscripciones',
 ]
 
 MIDDLEWARE = [
