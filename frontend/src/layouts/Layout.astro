@@ -50,6 +50,7 @@ const apiUrl = import.meta.env.PUBLIC_API_URL;
   <body data-api-url={apiUrl}>
     <Navbar />
     <slot />
+    <div id="toast-root"></div>
   </body>
   <script>
     const ACCESS_LIFETIME_MINUTES = 10;
@@ -109,18 +110,49 @@ const apiUrl = import.meta.env.PUBLIC_API_URL;
       }
     }
 
-    setInterval(() => {
-      const timeSinceLastActivity = Date.now() - lastActivity;
-      console.log(`Time since last activity: ${timeSinceLastActivity} ms`);
+    setInterval(
+      () => {
+        const timeSinceLastActivity = Date.now() - lastActivity;
+        console.log(`Time since last activity: ${timeSinceLastActivity} ms`);
 
-      if (timeSinceLastActivity < ACCESS_LIFETIME_MINUTES * 60 * 1000) {
-        console.log("Refreshing token...");
-        silentTokenRefresh();
-      } else {
-        console.log("User inactive for too long. Logging out.");
-        logout();
+        if (timeSinceLastActivity < ACCESS_LIFETIME_MINUTES * 60 * 1000) {
+          console.log("Refreshing token...");
+          silentTokenRefresh();
+        } else {
+          console.log("User inactive for too long. Logging out.");
+          logout();
+        }
+      },
+      REFRESH_INTERVAL_MINUTES * 60 * 1000
+    );
+  </script>
+  <script type="module">
+    import { render } from "preact";
+    import Toast from "../components/Toast.tsx";
+
+    let currentToast = null;
+
+    window.addEventListener("toast", (e) => {
+      const { message } = e.detail;
+
+      const container = document.getElementById("toast-root");
+      if (!container) return;
+
+      if (currentToast) {
+        currentToast.remove();
       }
-    }, REFRESH_INTERVAL_MINUTES * 60 * 1000);
+
+      const wrapper = document.createElement("div");
+      container.appendChild(wrapper);
+
+      render(<Toast message={message} />, wrapper);
+      currentToast = wrapper;
+
+      setTimeout(() => {
+        wrapper.remove();
+        currentToast = null;
+      }, 3000);
+    });
   </script>
 </html>
 
