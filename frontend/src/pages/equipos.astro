@@ -2,12 +2,15 @@
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
 import EquiposPage from "../components/EquiposPage";
+import AuthGuard from "../components/SuscripcionGuard";
 ---
 
 <Layout>
-  <div class="bg-white min-h-screen w-full">
-    <main class="max-w-4xl mx-auto pt-8 px-4 py-10">
-      <EquiposPage client:only="react" />
-    </main>
-  </div>
+  <AuthGuard client:only="react">
+    <div class="bg-white min-h-screen w-full">
+      <main class="max-w-4xl mx-auto pt-8 px-4 py-10">
+        <EquiposPage client:only="react" />
+      </main>
+    </div>
+  </AuthGuard>
 </Layout>

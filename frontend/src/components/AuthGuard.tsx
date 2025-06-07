@@ -12,9 +12,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     }
   }, []);
 
-  if (!isChecked) {
-    return null;
-  }
+  if (!isChecked) return null;
 
   return <>{children}</>;
 }
