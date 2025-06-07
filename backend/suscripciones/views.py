@@ -78,6 +78,20 @@ class ReactivarSuscripcionView(APIView):
             return Response({"detail": str(e)}, status=400)
 
 
+class SuscripcionEstadoView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        suscripcion = getattr(request.user, 'suscripcion', None)
+        if suscripcion and suscripcion.esta_activa:
+            return Response({
+                "activa": True,
+                "tipo": suscripcion.plan,
+                "fecha_fin": suscripcion.fecha_fin.strftime("%Y-%m-%d"),
+            })
+        return Response({"activa": False})
+
+
 def enviar_email_suscripcion(usuario, tipo):
     subject_map = {
         "contratada": "¡Suscripción activada!",
