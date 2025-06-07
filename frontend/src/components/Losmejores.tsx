@@ -127,8 +127,8 @@ export default function LosMejores() {
               Cargando partidos...
             </div>
           ) : partidosMostrar.length === 0 ? (
-            <p className="text-gray-500 italic">
-              Aún no hay partidos analizados para hoy. Vuelve más tarde.
+            <p className="text-gray-500">
+              No hay partidos para hoy.
             </p>
           ) : (
             <div className="flex flex-col gap-4 sm:grid sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-1 xl:grid-cols-1 2xl:grid-cols-1">

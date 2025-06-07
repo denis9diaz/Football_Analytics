@@ -45,25 +45,39 @@ export default function Favoritos() {
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
 
   useEffect(() => {
-  fetchWithAuth(`${API_URL}/api/favoritos/`)
-    .then((res) => res.json())
-    .then((data: Favorito[]) => {
-      if (Array.isArray(data)) {
-        setFavoritos(data);
-      } else {
-        setFavoritos([]);
+    const eliminarFavoritosYActualizar = async () => {
+      try {
+        // Eliminar favoritos del día anterior
+        await fetchWithAuth(`${API_URL}/api/favoritos/eliminar-dia-anterior/`, {
+          method: "DELETE",
+        });
+      } catch (err) {
+        console.error("Error al eliminar favoritos del día anterior:", err);
       }
-      setIsCargando(false);
-    })
-    .catch((err) => {
-      if (err.message === "Unauthorized") {
-        window.location.href = "/login";
-      } else {
-        setFavoritos([]);
-        setIsCargando(false);
-      }
-    });
-}, []);
+
+      // Cargar favoritos
+      fetchWithAuth(`${API_URL}/api/favoritos/`)
+        .then((res) => res.json())
+        .then((data: Favorito[]) => {
+          if (Array.isArray(data)) {
+            setFavoritos(data);
+          } else {
+            setFavoritos([]);
+          }
+          setIsCargando(false);
+        })
+        .catch((err) => {
+          if (err.message === "Unauthorized") {
+            window.location.href = "/login";
+          } else {
+            setFavoritos([]);
+            setIsCargando(false);
+          }
+        });
+    };
+
+    eliminarFavoritosYActualizar();
+  }, []);
 
   const toggleFavorito = async (favoritoId: number) => {
     await fetchWithAuth(`${API_URL}/api/favoritos/${favoritoId}/`, {

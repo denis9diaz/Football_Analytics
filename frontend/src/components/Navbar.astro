@@ -112,8 +112,7 @@
         <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>
         <a href="/ligas" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Ligas</a>
         <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>
-        <a href="/activar-prueba" id="btn-prueba" class="block text-md font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg px-4 py-2 shadow-lg hover:from-blue-600 hover:to-purple-600 hover:shadow-xl transition-all">Prueba gratuita</a>
-`;
+        <a href="/activar-prueba" id="btn-prueba" class="inline-block w-fit text-md font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg px-4 py-2 shadow-lg hover:from-blue-600 hover:to-purple-600 hover:shadow-xl transition-all">Prueba gratuita</a>`;
 
       const dropdown = `
         <div class="relative inline-block text-left group">
@@ -164,7 +163,10 @@
             }
           })
           .catch((error) => {
-            console.error("Error al verificar suscripción (vista principal):", error);
+            console.error(
+              "Error al verificar suscripción (vista principal):",
+              error
+            );
             if (btnPrueba) btnPrueba.style.display = "block"; // Mostrar el botón en caso de error
           });
       }
@@ -188,7 +190,9 @@
                 if (btn) btn.remove();
               }
             })
-            .catch((error) => console.error("Error al verificar suscripción (móvil):", error));
+            .catch((error) =>
+              console.error("Error al verificar suscripción (móvil):", error)
+            );
         }
 
         bindDropdownEvents(mobileAll);
@@ -199,25 +203,27 @@
 
     function showGuestLinks() {
       const center = `
-        <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Partidos</a>
-        <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Planes</a>
-        <a href="/ligas" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Ligas</a>
-        <a href="/registro?origen=prueba" class="block text-md font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg px-4 py-2 shadow-lg hover:from-blue-600 hover:to-purple-600 hover:shadow-xl transition-all">Prueba gratuita</a>`;
+    <a href="/analisis" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Partidos</a>
+    <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Planes</a>
+    <a href="/ligas" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Ligas</a>`;
+
+      const prueba = `
+    <a href="/registro?origen=prueba" id="btn-prueba" class="inline-block w-fit mt-2 text-md font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg px-4 py-2 shadow-lg hover:from-blue-600 hover:to-purple-600 hover:shadow-xl transition-all">Prueba gratuita</a>
+  `;
 
       const right = `
-        <a href="/login" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Iniciar sesión</a>
-        <a href="/registro" class="block w-fit text-base font-semibold px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Registrarse</a>`;
+    <a href="/login" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Iniciar sesión</a>
+    <a href="/registro" class="block w-fit text-base font-semibold px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Registrarse</a>`;
 
-      centerNav.innerHTML = center;
+      centerNav.innerHTML = center + prueba;
       rightNav.innerHTML = right;
       rightNav.classList.remove("opacity-0");
 
       const mobileAll = document.getElementById("mobile-nav-all");
       if (mobileAll) {
-        mobileAll.innerHTML = center + right;
+        mobileAll.innerHTML = center + right + prueba;
       }
     }
-
     function bindDropdownEvents(scope) {
       const btn = scope.querySelector("#user-menu-button");
       const dropdown = scope.querySelector("#user-dropdown");

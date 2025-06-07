@@ -706,6 +706,10 @@ export default function Analisis() {
                   </div>
                 );
               })}
+
+            {!isCargando && partidosFiltradosPorFecha.length === 0 && (
+              <p className="text-gray-500 mt-8">No hay partidos para hoy.</p>
+            )}
           </>
         ) : (
           <p className="text-gray-500">
