@@ -13,11 +13,11 @@ export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const response = await fetch(url, authOptions);
 
   if (response.status === 401) {
-    // Token expirado o inválido: cerrar sesión
+    // Token expirado o inválido: limpiar pero NO redirigir
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("username");
-    window.location.href = "/login";
+    throw new Error("Unauthorized");
   }
 
   return response;

@@ -3,6 +3,15 @@ import { fetchWithAuth } from "../utils/fetchWithAuth";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
+function formatFecha(fecha: string) {
+  const d = new Date(fecha);
+  return d.toLocaleDateString("es-ES", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+}
+
 export default function CuentaForm() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -13,17 +22,39 @@ export default function CuentaForm() {
 
   useEffect(() => {
     fetchWithAuth(`${API_URL}/api/auth/user/`)
-      .then((res) => res.json())
-      .then((data) => {
-        setUsername(data.username);
-        setEmail(data.email);
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = "/login";
+          return null;
+        }
+        return res.json();
       })
-      .catch((err) => console.error("Error al cargar usuario:", err));
+      .then((data) => {
+        if (data) {
+          setUsername(data.username);
+          setEmail(data.email);
+        }
+      })
+      .catch((err) => {
+        console.error("Error al cargar usuario:", err);
+        window.location.href = "/login";
+      });
 
     fetchWithAuth(`${API_URL}/api/suscripcion/`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => setSuscripcion(data))
-      .catch((err) => console.error("Error al cargar suscripción:", err));
+      .then((res) => {
+        if (res.status === 401) {
+          window.location.href = "/login";
+          return null;
+        }
+        return res.ok ? res.json() : null;
+      })
+      .then((data) => {
+        if (data) setSuscripcion(data);
+      })
+      .catch((err) => {
+        console.error("Error al cargar suscripción:", err);
+        window.location.href = "/login";
+      });
   }, []);
 
   const handleSave = async () => {
@@ -142,26 +173,25 @@ export default function CuentaForm() {
                 caducará el día {formatFecha(suscripcion.fecha_fin)}
               </strong>
               . Puedes seguir usando todas las funciones hasta entonces. Puedes
-              reactivarla en cualquier momento pulsando{" "}
-              <span
-                onClick={() => setModalVisible(true)}
-                className="text-blue-600 hover:underline cursor-pointer mt-3"
-              >
-                Gestionar suscripción
-              </span>
-              .
-            </p>
-          ) : (
-            <p className="text-sm text-gray-700 mb-">
-              Tu suscripción se renovará el día{" "}
-              <strong>{formatFecha(suscripcion.fecha_fin)}</strong>
-              <p
+              reactivarla en cualquier momento pulsando "Gestionar suscripción".
+              <div
                 onClick={() => setModalVisible(true)}
                 className="text-blue-600 hover:underline cursor-pointer mt-5"
               >
                 Gestionar suscripción
-              </p>
+              </div>
             </p>
+          ) : (
+            <div className="text-sm text-gray-700">
+              Tu suscripción se renovará el día{" "}
+              <strong>{formatFecha(suscripcion.fecha_fin)}</strong>.
+              <div
+                onClick={() => setModalVisible(true)}
+                className="text-blue-600 hover:underline cursor-pointer mt-5"
+              >
+                Gestionar suscripción
+              </div>
+            </div>
           )
         ) : (
           <p className="text-sm text-gray-700 mb-3">
@@ -178,76 +208,66 @@ export default function CuentaForm() {
 
       {/* Modal */}
       {modalVisible && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl text-center">
-      <h2 className="text-lg font-semibold text-gray-800 mb-4">
-        {suscripcion?.cancelada
-          ? "Reactivar suscripción"
-          : "Cancelar suscripción"}
-      </h2>
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 max-w-md w-full shadow-xl text-center">
+            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+              {suscripcion?.cancelada
+                ? "Reactivar suscripción"
+                : "Cancelar suscripción"}
+            </h2>
 
-      <p className="text-sm text-gray-700 mb-6 text-left">
-        {suscripcion?.cancelada ? (
-          <>Confirma que deseas reactivar tu cuenta.</>
-        ) : (
-          <>Al cancelar tu suscripción, perderás el acceso a 
-            todas las funciones premium.
-            <br />
-            Seguirás teniendo acceso hasta que caduque tu
-            suscripción.
-            <br />
-            Puedes reactivarla en cualquier momento.
-            <br />
-            <br />
-            ¿Deseas cancelar?
-          </>
-        )}
-      </p>
+            <p className="text-sm text-gray-700 mb-6 text-left">
+              {suscripcion?.cancelada ? (
+                <>Confirma que deseas reactivar tu cuenta.</>
+              ) : (
+                <>
+                  Al cancelar tu suscripción, perderás el acceso a todas las
+                  funciones premium.
+                  <br />
+                  Seguirás teniendo acceso hasta que caduque tu suscripción.
+                  <br />
+                  Puedes reactivarla en cualquier momento.
+                  <br />
+                  <br />
+                  ¿Deseas cancelar?
+                </>
+              )}
+            </p>
 
-      <div className="flex justify-center gap-4">
-        <button
-          onClick={async () => {
-            const endpoint = suscripcion?.cancelada
-              ? "reactivar"
-              : "cancelar";
-            const res = await fetchWithAuth(
-              `${API_URL}/api/suscripcion/${endpoint}/`,
-              { method: "POST" }
-            );
-            if (res.ok) {
-              setModalVisible(false);
-              location.reload();
-            }
-          }}
-          className={`px-4 py-2 text-sm rounded-md font-medium w-full cursor-pointer ${
-            suscripcion?.cancelada
-              ? "bg-green-600 text-white hover:bg-green-700"
-              : "bg-red-600 text-white hover:bg-red-700"
-          }`}
-        >
-          Confirmar
-        </button>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={async () => {
+                  const endpoint = suscripcion?.cancelada
+                    ? "reactivar"
+                    : "cancelar";
+                  const res = await fetchWithAuth(
+                    `${API_URL}/api/suscripcion/${endpoint}/`,
+                    { method: "POST" }
+                  );
+                  if (res.ok) {
+                    setModalVisible(false);
+                    location.reload();
+                  }
+                }}
+                className={`px-4 py-2 text-sm rounded-md font-medium w-full cursor-pointer ${
+                  suscripcion?.cancelada
+                    ? "bg-green-600 text-white hover:bg-green-700"
+                    : "bg-red-600 text-white hover:bg-red-700"
+                }`}
+              >
+                Confirmar
+              </button>
 
-        <button
-          onClick={() => setModalVisible(false)}
-          className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 w-full cursor-pointer"
-        >
-          Atrás
-        </button>
-      </div>
-    </div>
-  </div>
-)}
-
+              <button
+                onClick={() => setModalVisible(false)}
+                className="px-4 py-2 text-sm rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100 w-full cursor-pointer"
+              >
+                Atrás
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </section>
   );
-}
-
-function formatFecha(fecha: string) {
-  const d = new Date(fecha);
-  return d.toLocaleDateString("es-ES", {
-    day: "2-digit",
-    month: "2-digit",
-    year: "numeric",
-  });
 }

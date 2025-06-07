@@ -45,21 +45,25 @@ export default function Favoritos() {
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
 
   useEffect(() => {
-    fetchWithAuth(`${API_URL}/api/favoritos/`)
-      .then((res) => res.json())
-      .then((data: Favorito[]) => {
-        if (Array.isArray(data)) {
-          setFavoritos(data);
-        } else {
-          setFavoritos([]);
-        }
-        setIsCargando(false);
-      })
-      .catch(() => {
+  fetchWithAuth(`${API_URL}/api/favoritos/`)
+    .then((res) => res.json())
+    .then((data: Favorito[]) => {
+      if (Array.isArray(data)) {
+        setFavoritos(data);
+      } else {
+        setFavoritos([]);
+      }
+      setIsCargando(false);
+    })
+    .catch((err) => {
+      if (err.message === "Unauthorized") {
+        window.location.href = "/login";
+      } else {
         setFavoritos([]);
         setIsCargando(false);
-      });
-  }, []);
+      }
+    });
+}, []);
 
   const toggleFavorito = async (favoritoId: number) => {
     await fetchWithAuth(`${API_URL}/api/favoritos/${favoritoId}/`, {

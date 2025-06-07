@@ -257,11 +257,6 @@ export default function Analisis() {
       setMostrarAviso(true);
     }
   }, []);
-    
-  if (estaSuscrito === null) {
-    console.log("⏳ Esperando verificación de suscripción...");
-    return null;
-  }
 
   const cerrarAviso = () => {
     setMostrarAviso(false);
@@ -626,29 +621,25 @@ export default function Analisis() {
                                   </span>
                                 </td>
                                 <td className="px-4 py-2 text-blue-600 font-semibold">
-                                  {estaSuscrito ? (
-                                    p.porcentaje_acierto ? (
-                                      `${parseFloat(
-                                        p.porcentaje_acierto
-                                      ).toFixed(1)}%`
-                                    ) : (
-                                      "-"
-                                    )
+                                  {estaSuscrito && p.porcentaje_acierto ? (
+                                    `${parseFloat(p.porcentaje_acierto).toFixed(
+                                      1
+                                    )}%`
                                   ) : (
                                     <i
                                       className="fas fa-lock text-gray-400"
-                                      title="Contrata un plan"
+                                      title="Solo suscriptores"
                                     />
                                   )}
                                 </td>
 
                                 <td className="px-4 py-2 text-gray-800 font-semibold">
-                                  {estaSuscrito ? (
+                                  {estaSuscrito && p.cuota_estim_real ? (
                                     p.cuota_estim_real
                                   ) : (
                                     <i
                                       className="fas fa-lock text-gray-400"
-                                      title="Contrata un plan"
+                                      title="Solo suscriptores"
                                     />
                                   )}
                                 </td>
@@ -664,31 +655,28 @@ export default function Analisis() {
                                 <td
                                   className="px-4 py-2 font-semibold"
                                   style={{
-                                    color: estaSuscrito
-                                      ? parseFloat(p.valor_estimado) > 0
+                                    color:
+                                      estaSuscrito &&
+                                      parseFloat(p.valor_estimado) > 0
                                         ? "#16a34a"
-                                        : parseFloat(p.valor_estimado) < 0
+                                        : estaSuscrito &&
+                                          parseFloat(p.valor_estimado) < 0
                                         ? "#dc2626"
-                                        : undefined
-                                      : undefined,
+                                        : undefined,
                                   }}
                                 >
-                                  {estaSuscrito ? (
-                                    p.valor_estimado ? (
-                                      `${
-                                        parseFloat(p.valor_estimado) >= 0
-                                          ? "+"
-                                          : ""
-                                      }${parseFloat(p.valor_estimado).toFixed(
-                                        0
-                                      )}%`
-                                    ) : (
-                                      "-"
-                                    )
+                                  {estaSuscrito && p.valor_estimado ? (
+                                    `${
+                                      parseFloat(p.valor_estimado) >= 0
+                                        ? "+"
+                                        : ""
+                                    }${parseFloat(p.valor_estimado).toFixed(
+                                      0
+                                    )}%`
                                   ) : (
                                     <i
                                       className="fas fa-lock text-gray-400"
-                                      title="Contrata un plan"
+                                      title="Solo suscriptores"
                                     />
                                   )}
                                 </td>

@@ -70,9 +70,14 @@ export default function LosMejores() {
 
         setIsCargando(false);
       })
-      .catch(() => {
-        setPartidosAnalizados({});
-        setIsCargando(false);
+      .catch((err) => {
+        if (err.message === "Unauthorized") {
+          // 🔁 Redirigir al login si el token es inválido o ha caducado
+          window.location.href = "/login";
+        } else {
+          setPartidosAnalizados({});
+          setIsCargando(false);
+        }
       });
   }, []);
 
