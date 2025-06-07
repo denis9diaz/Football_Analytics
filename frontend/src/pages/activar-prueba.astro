@@ -1,0 +1,11 @@
+---
+import Activar from "../components/ActivarPrueba";
+import Layout from "../layouts/Layout.astro";
+const title = "Activar prueba gratuita";
+import "../styles/global.css";
+import "animate.css";
+---
+
+<Layout title={title}>
+  <Activar client:load />
+</Layout>

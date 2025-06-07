@@ -111,7 +111,9 @@
         <a href="/favoritos" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Favoritos</a>
         <a href="/losmejores" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Los mejores de hoy</a>
         <a href="/ligas" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Ligas</a>
-        <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>`;
+        <a href="/planes" class="block text-base font-semibold text-gray-800 hover:text-blue-600">Planes</a>
+        <a href="/activar-prueba" id="btn-prueba" class="block text-base font-semibold text-blue-600 hover:underline">Prueba gratuita</a>
+`;
 
       const dropdown = `
         <div class="relative inline-block text-left group">
@@ -136,9 +138,46 @@
       rightNav.innerHTML = dropdown;
       rightNav.classList.remove("opacity-0");
 
+      const API_URL = document
+        .querySelector("nav[data-api-url]")
+        ?.getAttribute("data-api-url");
+      const access = localStorage.getItem("access");
+
+      if (API_URL && access) {
+        fetch(`${API_URL}/api/suscripciones/estado/`, {
+          headers: {
+            Authorization: `Bearer ${access}`,
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data?.activa) {
+              const btn = document.getElementById("btn-prueba");
+              if (btn) btn.remove();
+            }
+          });
+      }
+
       const mobileAll = document.getElementById("mobile-nav-all");
       if (mobileAll) {
         mobileAll.innerHTML = links + dropdown;
+
+        // Verificar suscripción también en móvil
+        if (API_URL && access) {
+          fetch(`${API_URL}/api/suscripciones/estado/`, {
+            headers: {
+              Authorization: `Bearer ${access}`,
+            },
+          })
+            .then((res) => res.json())
+            .then((data) => {
+              if (data?.activa) {
+                const btn = mobileAll.querySelector("#btn-prueba");
+                if (btn) btn.remove();
+              }
+            });
+        }
+
         bindDropdownEvents(mobileAll);
       }
 
@@ -153,7 +192,8 @@
 
       const right = `
         <a href="/login" class="block text-base font-semibold text-gray-800 hover:text-blue-700">Iniciar sesión</a>
-        <a href="/registro" class="block w-fit text-base font-semibold px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Registrarse</a>`;
+        <a href="/registro" class="block w-fit text-base font-semibold px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">Registrarse</a>
+        <a href="/registro?origen=prueba" class="block text-sm font-semibold text-blue-600 hover:underline">Prueba gratuita</a>`;
 
       centerNav.innerHTML = center;
       rightNav.innerHTML = right;

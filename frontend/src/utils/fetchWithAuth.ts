@@ -1,19 +1,18 @@
 export async function fetchWithAuth(url: string, options: RequestInit = {}) {
   const access = localStorage.getItem("access");
 
-  const authOptions = {
+  const headers = new Headers(options.headers || {});
+  headers.set("Authorization", `Bearer ${access}`);
+  headers.set("Content-Type", "application/json");
+
+  const authOptions: RequestInit = {
     ...options,
-    headers: {
-      ...(options.headers || {}),
-      Authorization: `Bearer ${access}`,
-      "Content-Type": "application/json",
-    },
+    headers,
   };
 
   const response = await fetch(url, authOptions);
 
   if (response.status === 401) {
-    // Token expirado o inválido: limpiar pero NO redirigir
     localStorage.removeItem("access");
     localStorage.removeItem("refresh");
     localStorage.removeItem("username");

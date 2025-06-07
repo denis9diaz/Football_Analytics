@@ -159,8 +159,14 @@ export default function CuentaForm() {
         {suscripcion && (
           <h3 className="text-base font-medium text-gray-700 mb-3">
             Plan:{" "}
-            <span className="text-green-600 capitalize mt-3">
-              {suscripcion.plan}
+            <span
+              className={`text-green-600 capitalize mt-3 ${
+                suscripcion.plan === "prueba" ? "text-blue-600" : ""
+              }`}
+            >
+              {suscripcion.plan === "prueba"
+                ? "Prueba gratuita"
+                : suscripcion.plan}
             </span>
           </h3>
         )}
