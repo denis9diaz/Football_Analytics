@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SuscripcionProvider } from "./SuscripcionContext";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const [autorizado, setAutorizado] = useState(false);
@@ -45,5 +46,9 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   if (!comprobado || !autorizado) return null;
 
-  return <>{children}</>;
+  return (
+    <SuscripcionProvider>
+      {children}
+    </SuscripcionProvider>
+  );
 }

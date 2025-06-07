@@ -6,6 +6,7 @@ import { es } from "date-fns/locale";
 import "react-datepicker/dist/react-datepicker.css";
 import { fetchWithAuth } from "../utils/fetchWithAuth";
 import Select from "react-select";
+import { useSuscripcion } from "./SuscripcionContext";
 
 const API_URL = import.meta.env.PUBLIC_API_URL;
 
@@ -56,11 +57,11 @@ function capitalize(text: string) {
 }
 
 export default function Analisis() {
+  const { estaSuscrito } = useSuscripcion();
   const [ligas, setLigas] = useState<Liga[]>([]);
   const [partidos, setPartidos] = useState<PartidoAnalizado[]>([]);
   const [ligaFiltrada, setLigaFiltrada] = useState<number | null>(null);
-  const [metodoSeleccionado, setMetodoSeleccionado] =
-    useState<string>("Over 0.5 HT");
+
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
   const [calendarioAbierto, setCalendarioAbierto] = useState(false);
   const [ordenCampo, setOrdenCampo] = useState<string | null>(null);
@@ -68,6 +69,8 @@ export default function Analisis() {
   const [favoritos, setFavoritos] = useState<Favorito[]>([]);
   const [isCargando, setIsCargando] = useState(true);
   const [showTooltip, setShowTooltip] = useState<string | null>(null);
+  const [metodoSeleccionado, setMetodoSeleccionado] =
+    useState<string>("Over 0.5 HT");
 
   useEffect(() => {
     if (!metodoSeleccionado) {
@@ -134,6 +137,8 @@ export default function Analisis() {
         setIsCargando(false);
       });
   }, [metodoSeleccionado, fechaSeleccionada]);
+
+  console.log("🔄 Estado de suscripción:", estaSuscrito);
 
   const partidosFiltradosPorFecha = partidos.filter(
     (p) =>
@@ -252,6 +257,11 @@ export default function Analisis() {
       setMostrarAviso(true);
     }
   }, []);
+    
+  if (estaSuscrito === null) {
+    console.log("⏳ Esperando verificación de suscripción...");
+    return null;
+  }
 
   const cerrarAviso = () => {
     setMostrarAviso(false);
@@ -616,15 +626,33 @@ export default function Analisis() {
                                   </span>
                                 </td>
                                 <td className="px-4 py-2 text-blue-600 font-semibold">
-                                  {p.porcentaje_acierto
-                                    ? `${parseFloat(
+                                  {estaSuscrito ? (
+                                    p.porcentaje_acierto ? (
+                                      `${parseFloat(
                                         p.porcentaje_acierto
                                       ).toFixed(1)}%`
-                                    : "-"}
+                                    ) : (
+                                      "-"
+                                    )
+                                  ) : (
+                                    <i
+                                      className="fas fa-lock text-gray-400"
+                                      title="Contrata un plan"
+                                    />
+                                  )}
                                 </td>
+
                                 <td className="px-4 py-2 text-gray-800 font-semibold">
-                                  {p.cuota_estim_real}
+                                  {estaSuscrito ? (
+                                    p.cuota_estim_real
+                                  ) : (
+                                    <i
+                                      className="fas fa-lock text-gray-400"
+                                      title="Contrata un plan"
+                                    />
+                                  )}
                                 </td>
+
                                 <td className="px-4 py-2 text-gray-800 font-semibold">
                                   {p.cuota_casa_apuestas &&
                                   !["", "–"].includes(
@@ -636,24 +664,35 @@ export default function Analisis() {
                                 <td
                                   className="px-4 py-2 font-semibold"
                                   style={{
-                                    color:
-                                      parseFloat(p.valor_estimado) > 0
+                                    color: estaSuscrito
+                                      ? parseFloat(p.valor_estimado) > 0
                                         ? "#16a34a"
                                         : parseFloat(p.valor_estimado) < 0
                                         ? "#dc2626"
-                                        : undefined,
+                                        : undefined
+                                      : undefined,
                                   }}
                                 >
-                                  {p.valor_estimado
-                                    ? `${
+                                  {estaSuscrito ? (
+                                    p.valor_estimado ? (
+                                      `${
                                         parseFloat(p.valor_estimado) >= 0
                                           ? "+"
                                           : ""
                                       }${parseFloat(p.valor_estimado).toFixed(
                                         0
                                       )}%`
-                                    : "-"}
+                                    ) : (
+                                      "-"
+                                    )
+                                  ) : (
+                                    <i
+                                      className="fas fa-lock text-gray-400"
+                                      title="Contrata un plan"
+                                    />
+                                  )}
                                 </td>
+
                                 <td
                                   className="px-2 py-2 text-center cursor-pointer text-xl"
                                   onClick={() => toggleFavorito(p.id)}

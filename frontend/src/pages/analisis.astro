@@ -1,16 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import "../styles/global.css";
-import AnalisisComponent from "../components/Analisis.tsx";
-import AuthGuard from "../components/SuscripcionGuard.tsx";
+import { SuscripcionProvider } from "../components/SuscripcionContext";
+import AnalisisWrapper from "../components/AnalisisWrapper";
 ---
 
 <Layout>
-  <AuthGuard client:only="react">
-    <div class="bg-white min-h-screen w-full">
-      <main class="max-w-7xl mx-auto pt-8 px-4 py-10">
-        <AnalisisComponent client:load />
-      </main>
-    </div>
-  </AuthGuard>
+  <AnalisisWrapper client:only="react" />
 </Layout>
