@@ -5,6 +5,7 @@ from dateutil.relativedelta import relativedelta
 
 class Suscripcion(models.Model):
     PLANES = [
+        ('prueba', 'Prueba gratuita'),
         ('mensual', 'Mensual'),
         ('trimestral', 'Trimestral'),
         ('anual', 'Anual'),
@@ -27,7 +28,9 @@ class Suscripcion(models.Model):
         fecha_base = self.fecha_fin if self.fecha_fin >= hoy else hoy
 
         # Determinar cuánto tiempo sumar
-        if nuevo_plan == 'mensual':
+        if nuevo_plan == 'prueba':
+            nueva_fecha_fin = fecha_base + relativedelta(days=3)
+        elif nuevo_plan == 'mensual':
             nueva_fecha_fin = fecha_base + relativedelta(months=1)
         elif nuevo_plan == 'trimestral':
             nueva_fecha_fin = fecha_base + relativedelta(months=3)

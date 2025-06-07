@@ -1,0 +1,17 @@
+{% extends "email/base_email.html" %}
+
+{% block content %}
+  <div style="text-align: center;">
+    <img src="https://res.cloudinary.com/dxzhssh9m/image/upload/v1748962059/logo_q16sbd.png" alt="Fútbol Analytics" style="height: 60px; margin-bottom: 20px;" />
+  </div>
+
+  <h2 style="color: #2B7FFF;">¡Tu prueba gratuita ha comenzado!</h2>
+
+  <p style="font-size: 16px; color: #333;">
+    Disfruta de <strong>3 días de acceso completo</strong> a todos los análisis y funcionalidades premium de <strong>Fútbol Analytics</strong>.
+  </p>
+
+  <p style="font-size: 16px; color: #333;">
+    La prueba gratuita finalizará el día <strong>{{ fecha_fin }}</strong>. Puedes contratar un plan en cualquier momento.
+  </p>
+{% endblock %}

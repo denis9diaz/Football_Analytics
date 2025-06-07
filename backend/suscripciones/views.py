@@ -33,6 +33,10 @@ class ContratarSuscripcionView(APIView):
             user = request.user
             hoy = localdate()
 
+            # Verificar si ya tuvo prueba gratuita
+            if plan == 'prueba' and Suscripcion.objects.filter(usuario=user, plan='prueba').exists():
+                return Response({"detail": "Ya has utilizado tu prueba gratuita."}, status=400)
+
             suscripcion, creada = Suscripcion.objects.get_or_create(usuario=user, defaults={
                 "plan": plan,
                 "fecha_fin": hoy,  # se actualizará enseguida
@@ -40,7 +44,9 @@ class ContratarSuscripcionView(APIView):
 
             suscripcion.contratar_o_renovar(plan)
 
-            enviar_email_suscripcion(user, "contratada")
+            # Enviar correo según tipo de plan
+            tipo_correo = "prueba" if plan == "prueba" else "contratada"
+            enviar_email_suscripcion(user, tipo_correo)
 
             return Response(SuscripcionSerializer(suscripcion).data)
 
@@ -56,9 +62,7 @@ class CancelarSuscripcionView(APIView):
             return Response({"detail": "No tienes suscripción activa."}, status=400)
 
         suscripcion.cancelar()
-
         enviar_email_suscripcion(request.user, "cancelada")
-
         return Response({"detail": "Suscripción cancelada correctamente."})
 
 
@@ -71,6 +75,8 @@ class ReactivarSuscripcionView(APIView):
             return Response({"detail": "No tienes suscripción."}, status=400)
 
         try:
+            if suscripcion.plan == 'prueba':
+                raise ValueError("No se puede reactivar una prueba gratuita.")
             suscripcion.reactivar()
             enviar_email_suscripcion(request.user, "reactivada")
             return Response({"detail": "Suscripción reactivada correctamente."})
@@ -109,7 +115,7 @@ def enviar_email_suscripcion(usuario, tipo):
     template = template_map.get(tipo)
 
     if not subject or not template:
-        return  # tipo inválido
+        return
 
     from_email = settings.DEFAULT_FROM_EMAIL
     to = [usuario.email]
